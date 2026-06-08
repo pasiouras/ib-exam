@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — IB Mock Exam Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--surface:#171717;--surface2:#1e1e1e;
+  --border:rgba(255,255,255,0.08);--border-h:rgba(255,255,255,0.16);
+  --text:#f0ede8;--muted:#888;--dim:#555;
+  --gold:#c8a96e;--gold-d:rgba(200,169,110,0.12);--gold-b:rgba(200,169,110,0.35);
+  --green:#4caf7d;--green-d:rgba(76,175,125,0.1);
+  --red:#e05252;--red-d:rgba(224,82,82,0.1);
+  --r:10px;--rs:6px;
+  --serif:'DM Serif Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.box{width:100%;max-width:400px}
+.logo{text-align:center;margin-bottom:2rem}
+.logo h1{font-family:var(--serif);font-size:2rem;font-weight:400}
+.logo h1 em{font-style:italic;color:var(--gold)}
+.logo p{font-size:12px;color:var(--muted);margin-top:4px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.8rem}
+.tabs{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:5px;margin-top:1rem}
+label:first-of-type{margin-top:0}
+input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;font-size:13px;color:var(--text);font-family:var(--sans);outline:none;transition:border-color .15s}
+input:focus{border-color:var(--gold-b)}
+.btn{width:100%;padding:12px;margin-top:1.2rem;background:var(--gold);color:#0f0f0f;border:none;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.btn:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.err{padding:10px 12px;background:var(--red-d);border:1px solid rgba(224,82,82,.3);border-radius:var(--rs);font-size:12px;color:var(--red);margin-top:.75rem;display:none}
+.ok{padding:10px 12px;background:var(--green-d);border:1px solid rgba(76,175,125,.3);border-radius:var(--rs);font-size:12px;color:var(--green);margin-top:.75rem;display:none}
+.divider{text-align:center;font-size:11px;color:var(--dim);margin:1rem 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.divider::before{left:0}.divider::after{right:0}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:1.5rem}
+.plan{padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);text-align:center;cursor:pointer;transition:all .15s}
+.plan:hover{border-color:var(--gold-b)}
+.plan.sel{border-color:var(--gold-b);background:var(--gold-d)}
+.plan .price{font-size:20px;font-weight:500;color:var(--gold);margin:.3rem 0}
+.plan .name{font-size:12px;font-weight:500}
+.plan .desc{font-size:10px;color:var(--muted);margin-top:2px}
+.free-note{font-size:11px;color:var(--muted);text-align:center;margin-top:.75rem;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">
+    <h1>IB Mock <em>Exams</em></h1>
+    <p>AI-powered practice for IB Mathematics</p>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('login')">Login</button>
+      <button class="tab" onclick="showTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- Login -->
+    <div id="loginTab">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="your@email.com">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn" onclick="doLogin()" id="loginBtn">Login</button>
+      <div class="err" id="loginErr"></div>
+    </div>
+
+    <!-- Signup -->
+    <div id="signupTab" style="display:none">
+      <label>Full Name</label>
+      <input type="text" id="signupName" placeholder="John Smith">
+      <label>Email</label>
+      <input type="email" id="signupEmail" placeholder="your@email.com">
+      <label>Password</label>
+      <input type="password" id="signupPass" placeholder="Min. 6 characters">
+
+      <div class="divider">Choose your plan</div>
+      <div class="plans">
+        <div class="plan sel" id="planFree" onclick="selPlan('free')">
+          <div class="name">Free</div>
+          <div class="price">€0</div>
+          <div class="desc">3 exams/day</div>
+        </div>
+        <div class="plan" id="planPro" onclick="selPlan('pro')">
+          <div class="name">Pro</div>
+          <div class="price">€8<span style="font-size:11px;color:var(--muted)">/mo</span></div>
+          <div class="desc">Unlimited exams</div>
+        </div>
+      </div>
+
+      <button class="btn" onclick="doSignup()" id="signupBtn">Create Account</button>
+      <p class="free-note">Pro plan: you'll be redirected to payment after signup.</p>
+      <div class="err" id="signupErr"></div>
+      <div class="ok" id="signupOk"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://goulimqcrbkahtgkftzy.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdvdWxpbXFjcmJrYWh0Z2tmdHp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MDEwMzMsImV4cCI6MjA5NjQ3NzAzM30.mCT4yWm3TCY-nOOv-vv5S8lDALLejnFsG5Ft8BsuFrg';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let selectedPlan = 'free';
+
+// Check if already logged in
+sb.auth.getSession().then(({data:{session}})=>{
+  if(session) window.location.href='index.html';
+});
+
+function showTab(t){
+  document.getElementById('loginTab').style.display = t==='login'?'block':'none';
+  document.getElementById('signupTab').style.display = t==='signup'?'block':'none';
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='signup')));
+}
+
+function selPlan(p){
+  selectedPlan=p;
+  document.getElementById('planFree').classList.toggle('sel',p==='free');
+  document.getElementById('planPro').classList.toggle('sel',p==='pro');
+}
+
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass){showErr('loginErr','Please fill in all fields.');return;}
+  document.getElementById('loginBtn').disabled=true;
+  document.getElementById('loginBtn').textContent='Logging in...';
+  const {error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){
+    showErr('loginErr',error.message);
+    document.getElementById('loginBtn').disabled=false;
+    document.getElementById('loginBtn').textContent='Login';
+  } else {
+    window.location.href='index.html';
+  }
+}
+
+async function doSignup(){
+  const name=document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim();
+  const pass=document.getElementById('signupPass').value;
+  if(!name||!email||!pass){showErr('signupErr','Please fill in all fields.');return;}
+  if(pass.length<6){showErr('signupErr','Password must be at least 6 characters.');return;}
+  document.getElementById('signupBtn').disabled=true;
+  document.getElementById('signupBtn').textContent='Creating account...';
+  const {error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+  if(error){
+    showErr('signupErr',error.message);
+    document.getElementById('signupBtn').disabled=false;
+    document.getElementById('signupBtn').textContent='Create Account';
+  } else {
+    document.getElementById('signupOk').textContent='✓ Account created! Check your email to confirm, then login.';
+    document.getElementById('signupOk').style.display='block';
+    document.getElementById('signupBtn').textContent='Account created!';
+  }
+}
+
+function showErr(id,msg){
+  const el=document.getElementById(id);
+  el.textContent=msg;el.style.display='block';
+}
+</script>
+</body>
+</html>
