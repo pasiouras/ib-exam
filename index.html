@@ -123,23 +123,23 @@ h1 em{font-style:italic;color:var(--gold)}
 <div class="page">
   <div class="eyebrow">IB Mathematics AA</div>
   <h1>Mock Exam <em>Generator</em></h1>
-  <p class="subtitle">Επέλεξε κεφάλαια και δυσκολία — το AI δημιουργεί νέο mock exam αμέσως.</p>
+  <p class="subtitle">Select topics and difficulty — AI generates a new mock exam instantly.</p>
 
   <!-- Config -->
   <div class="card no-print">
-    <div class="card-title"><span>⚙</span> Ρυθμίσεις</div>
+    <div class="card-title"><span>⚙</span> Settings</div>
 
-    <span class="lbl">Τύπος</span>
+    <span class="lbl">Mode</span>
     <div class="mode-grid">
       <div class="mode-card sel" id="mV" onclick="setMode('variant')">
         <div class="ic">🔄</div>
-        <h4>Παραλλαγή</h4>
-        <p>Ίδια δομή από past papers, νέα νούμερα</p>
+        <h4>Variation</h4>
+        <p>Same structure from past papers, new numbers</p>
       </div>
       <div class="mode-card" id="mA" onclick="setMode('ai')">
         <div class="ic">✨</div>
         <h4>AI-generated</h4>
-        <p>Νέες πρωτότυπες ερωτήσεις IB στυλ</p>
+        <p>New original IB-style questions</p>
       </div>
     </div>
 
@@ -149,24 +149,24 @@ h1 em{font-style:italic;color:var(--gold)}
       <div class="chip" id="cp2" onclick="togChip(this)">Paper 2 (calc)</div>
     </div>
 
-    <span class="lbl">Κεφάλαια</span>
+    <span class="lbl">Topics</span>
     <div class="chips" id="topicChips"></div>
 
-    <span class="lbl">Δυσκολία</span>
+    <span class="lbl">Difficulty</span>
     <div class="diff">
       <button class="on sl" onclick="setDiff(this,'sl')">SL</button>
       <button onclick="setDiff(this,'hl')" class="hl">HL</button>
       <button onclick="setDiff(this,'hlp')" class="hlp">HL+</button>
     </div>
 
-    <span class="lbl">Αριθμός ερωτήσεων</span>
+    <span class="lbl">Number of questions</span>
     <div class="sl-row">
       <input type="range" min="2" max="10" value="5" step="1" id="qc"
              oninput="document.getElementById('qv').textContent=this.value">
       <span class="sl-val" id="qv">5</span>
     </div>
 
-    <button class="gen-btn" onclick="generate()">✦ Δημιούργησε Mock Exam</button>
+    <button class="gen-btn" onclick="generate()">✦ Generate Mock Exam</button>
   </div>
 
   <div id="out"></div>
@@ -179,13 +179,13 @@ h1 em{font-style:italic;color:var(--gold)}
 const PROXY = 'https://green-bonus-7bbb.pasiouras.workers.dev/';
 const MODEL = 'claude-haiku-4-5-20251001';
 const TOPICS = [
-  'Άλγεβρα','Συναρτήσεις','Τριγωνομετρία','Απειροστικός Λ.',
-  'Στατιστική & Πιθανότητα','Γεωμετρία','Ακολουθίες & Σειρές',
-  'Μιγαδικοί','Διανύσματα','Διωνυμική Ανάπτυξη','Λογαρίθμοι & e^x','Κινηματική'
+  'Algebra','Functions','Trigonometry','Calculus',
+  'Statistics & Probability','Geometry','Sequences & Series',
+  'Complex Numbers','Vectors','Binomial Expansion','Logarithms & e^x','Kinematics'
 ];
 
 let mode='variant', diff='sl';
-let activeTopics=new Set(['Άλγεβρα','Συναρτήσεις','Απειροστικός Λ.','Τριγωνομετρία']);
+let activeTopics=new Set(['Algebra','Functions','Calculus','Trigonometry']);
 
 window.addEventListener('load',()=>{
   buildTopics();
@@ -210,7 +210,7 @@ function setDiff(btn,d){diff=d;document.querySelectorAll('.diff button').forEach
 async function generate(){
   
   const topics=[...document.querySelectorAll('#topicChips .chip.on')].map(c=>c.textContent);
-  if(!topics.length){alert('Επέλεξε τουλάχιστον ένα κεφάλαιο!');return;}
+  if(!topics.length){alert('Select at least one topic!');return;}
   const count=parseInt(document.getElementById('qc').value);
   const paperType=document.getElementById('cp1').classList.contains('on')?'Paper 1 (no calculator)':'Paper 2 (calculator)';
   const diffLabel={sl:'SL',hl:'HL',hlp:'HL+ challenging'}[diff];
@@ -223,7 +223,7 @@ async function generate(){
   out.innerHTML=`<div class="card prog-wrap fade">
     <div style="font-size:1.5rem;animation:spin 1s linear infinite;display:inline-block">⟳</div>
     <div class="prog-track"><div class="prog-fill" id="pf"></div></div>
-    <p class="prog-msg" id="pm">Δημιουργία ${count} ερωτήσεων…</p>
+    <p class="prog-msg" id="pm">Generating ${count} questions…</p>
   </div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
 
   let p=0;
@@ -263,7 +263,7 @@ Return ONLY valid JSON, no markdown:
     renderExam(JSON.parse(clean));
   }catch(e){
     clearInterval(iv);
-    out.innerHTML=`<div class="err">✕ Σφάλμα: ${e.message}<br><small>Δοκίμασε ξανά ή μείωσε τον αριθμό ερωτήσεων.</small></div>`;
+    out.innerHTML=`<div class="err">✕ Error: ${e.message}<br><small>Try again or reduce the number of questions.</small></div>`;
   }
 }
 
@@ -278,9 +278,9 @@ function renderExam(data){
     <span class="exam-badge">${total} marks</span>
   </div>
   <div class="stats fade">
-    <div class="stat"><div class="n">${qs.length}</div><div class="l">Ερωτήσεις</div></div>
+    <div class="stat"><div class="n">${qs.length}</div><div class="l">Questions</div></div>
     <div class="stat"><div class="n">${total}</div><div class="l">Marks</div></div>
-    <div class="stat"><div class="n">${time}'</div><div class="l">Χρόνος (~)</div></div>
+    <div class="stat"><div class="n">${time}'</div><div class="l">Time (~)</div></div>
   </div>`;
   qs.forEach((q,i)=>{
     const parts=(q.parts||[]).map(p=>`<div class="part"><span class="part-lbl">${p.label}</span><span class="part-txt">${p.text}</span><span class="part-m">[${p.marks}]</span></div>`).join('');
@@ -294,15 +294,15 @@ function renderExam(data){
       <div class="parts">${parts}</div>
       <button class="ms-btn" onclick="togMS(this)">
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        Εμφάνιση mark scheme
+        Show mark scheme
       </button>
       <div class="ms-box"><p>${ms}</p></div>
     </div>`;
   });
   html+=`<div class="actions no-print fade">
-    <button class="btn btn-p" onclick="generate()">↺ Νέο exam</button>
-    <button class="btn btn-s" onclick="revealAll()">👁 Όλες οι λύσεις</button>
-    <button class="btn btn-g" onclick="window.print()">🖨 Εκτύπωση</button>
+    <button class="btn btn-p" onclick="generate()">↺ New exam</button>
+    <button class="btn btn-s" onclick="revealAll()">👁 Show all solutions</button>
+    <button class="btn btn-g" onclick="window.print()">🖨 Print</button>
   </div>`;
   document.getElementById('out').innerHTML=html;
   renderKatex();
@@ -312,11 +312,11 @@ function togMS(btn){
   const box=btn.nextElementSibling;
   const open=!box.classList.contains('open');
   box.classList.toggle('open',open);btn.classList.toggle('open',open);
-  btn.childNodes[1].textContent=' '+(open?'Απόκρυψη mark scheme':'Εμφάνιση mark scheme');
+  btn.childNodes[1].textContent=' '+(open?'Hide mark scheme':'Show mark scheme');
 }
 function revealAll(){
   document.querySelectorAll('.ms-box').forEach(b=>b.classList.add('open'));
-  document.querySelectorAll('.ms-btn').forEach(b=>{b.classList.add('open');b.childNodes[1].textContent=' Απόκρυψη mark scheme';});
+  document.querySelectorAll('.ms-btn').forEach(b=>{b.classList.add('open');b.childNodes[1].textContent=' Hide mark scheme';});
 }
 function renderKatex(){
   if(typeof renderMathInElement==='function'){
