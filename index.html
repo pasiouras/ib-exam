@@ -1,12 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IB Math Mock Exam Generator</title>
+<title>IB Mock Exam Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -23,12 +23,33 @@
 }
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
-.page{max-width:800px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+.page{max-width:800px;margin:0 auto;padding:2rem 1.5rem 5rem}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.topbar-logo{font-family:var(--serif);font-size:1.2rem}
+.topbar-logo em{font-style:italic;color:var(--gold)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.user-info{font-size:12px;color:var(--muted)}
+.plan-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+.plan-badge.free{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.plan-badge.pro{background:var(--gold-d);color:var(--gold);border:1px solid var(--gold-b)}
+.btn-sm{padding:6px 14px;border-radius:var(--rs);font-size:12px;font-weight:500;font-family:var(--sans);cursor:pointer;transition:all .15s;border:1px solid var(--border);background:transparent;color:var(--muted)}
+.btn-sm:hover{color:var(--text);border-color:var(--border-h)}
+.btn-sm.gold{background:var(--gold);color:#0f0f0f;border-color:var(--gold)}
+.btn-sm.gold:hover{filter:brightness(1.1)}
+
+/* Limit bar */
+.limit-bar{padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.limit-bar .used{color:var(--muted)}
+.limit-bar .upgrade{color:var(--gold);cursor:pointer;font-weight:500}
+.limit-bar .upgrade:hover{text-decoration:underline}
+
 .eyebrow{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;display:flex;align-items:center;gap:8px}
 .eyebrow::before{content:'';display:inline-block;width:20px;height:1px;background:var(--gold)}
-h1{font-family:var(--serif);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:400;letter-spacing:-.02em;line-height:1.1;margin-bottom:.6rem}
+h1{font-family:var(--serif);font-size:clamp(1.6rem,4vw,2.4rem);font-weight:400;letter-spacing:-.02em;line-height:1.1;margin-bottom:.5rem}
 h1 em{font-style:italic;color:var(--gold)}
-.subtitle{font-size:13px;color:var(--muted);max-width:460px;line-height:1.7;margin-bottom:2rem}
+.subtitle{font-size:13px;color:var(--muted);max-width:460px;line-height:1.7;margin-bottom:1.5rem}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;margin-bottom:1rem}
 .card-title{font-size:13px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
 .lbl{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:6px;display:block;margin-top:1rem}
@@ -50,11 +71,12 @@ h1 em{font-style:italic;color:var(--gold)}
 .diff button.on.hl{border-color:var(--gold-b);background:var(--gold-d);color:var(--gold)}
 .diff button.on.hlp{border-color:rgba(224,82,82,.4);background:var(--red-d);color:var(--red)}
 .sl-row{display:flex;align-items:center;gap:12px}
-.sl-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:3px;background:var(--border-h);border-radius:2px;outline:none;cursor:pointer}
+.sl-row input[type=range]{flex:1;-webkit-appearance:none;height:3px;background:var(--border-h);border-radius:2px;outline:none;cursor:pointer}
 .sl-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer}
 .sl-val{font-size:14px;font-weight:500;color:var(--gold);min-width:24px;text-align:right}
 .gen-btn{width:100%;padding:13px;margin-top:1.2rem;background:var(--gold);color:#0f0f0f;border:none;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all .15s}
 .gen-btn:hover{filter:brightness(1.1)}
+.gen-btn:disabled{opacity:.35;cursor:not-allowed}
 .prog-wrap{padding:1.5rem;text-align:center}
 .prog-track{height:2px;background:var(--border);border-radius:2px;overflow:hidden;margin:.8rem 0}
 .prog-fill{height:100%;background:var(--gold);border-radius:2px;width:0;transition:width .4s ease}
@@ -67,7 +89,7 @@ h1 em{font-style:italic;color:var(--gold)}
 .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center}
 .stat .n{font-size:22px;font-weight:500;color:var(--gold)}
 .stat .l{font-size:10px;color:var(--muted);margin-top:1px}
-.q{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;margin-bottom:.6rem;transition:border-color .2s}
+.q{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;margin-bottom:.6rem}
 .q:hover{border-color:var(--border-h)}
 .q-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
 .q-num{width:26px;height:26px;border-radius:50%;background:var(--gold-d);border:1px solid var(--gold-b);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--gold);flex-shrink:0}
@@ -97,11 +119,17 @@ h1 em{font-style:italic;color:var(--gold)}
 .btn-p{background:var(--gold);color:#0f0f0f}
 .btn-p:hover{filter:brightness(1.1)}
 .btn-s{background:var(--surface2);color:var(--text);border:1px solid var(--border-h)}
-.btn-s:hover{background:var(--surface)}
 .btn-g{background:transparent;color:var(--muted);border:1px solid var(--border)}
 .btn-g:hover{color:var(--text);border-color:var(--border-h)}
 .err{padding:12px 14px;background:var(--red-d);border:1px solid rgba(224,82,82,.3);border-radius:var(--rs);font-size:12px;color:var(--red)}
-.warn{padding:12px 14px;background:rgba(200,169,110,.1);border:1px solid var(--gold-b);border-radius:var(--rs);font-size:12px;color:var(--gold);margin-bottom:1rem}
+
+/* Upgrade modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;display:none}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2rem;max-width:360px;width:90%;text-align:center}
+.modal h2{font-family:var(--serif);font-size:1.4rem;margin-bottom:.5rem}
+.modal p{font-size:12px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+.modal-btns{display:flex;gap:8px;flex-direction:column}
+
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .fade{animation:fadeUp .35s ease both}
 @media print{.no-print{display:none!important}.ms-box{display:block!important}}
@@ -109,11 +137,42 @@ h1 em{font-style:italic;color:var(--gold)}
 </style>
 </head>
 <body>
+
+<!-- Upgrade modal -->
+<div class="modal-bg" id="upgradeModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2>Upgrade to <em>Pro</em></h2>
+    <p>You've used all 3 free exams for today.<br>Upgrade to Pro for <strong style="color:var(--gold)">€8/month</strong> and get unlimited exams, all courses and priority support.</p>
+    <div class="modal-btns">
+      <button class="btn btn-p" onclick="window.location.href='mailto:your@email.com?subject=Pro Subscription'" style="width:100%">✦ Upgrade to Pro — €8/mo</button>
+      <button class="btn btn-g" onclick="closeModal()" style="width:100%">Maybe later</button>
+    </div>
+  </div>
+</div>
+
 <div class="page">
+  <!-- Topbar -->
+  <div class="topbar no-print">
+    <div class="topbar-logo">IB Mock <em>Exams</em></div>
+    <div class="topbar-right">
+      <span class="user-info" id="userEmail"></span>
+      <span class="plan-badge free" id="planBadge">Free</span>
+      <button class="btn-sm gold" id="upgradeBtn" onclick="showModal()" style="display:none">Upgrade ✦</button>
+      <button class="btn-sm" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
   <div class="eyebrow">IB Mathematics</div>
   <h1>Mock Exam <em>Generator</em></h1>
   <p class="subtitle">Select your course, topics and difficulty — AI generates a new mock exam instantly.</p>
 
+  <!-- Limit bar (free users) -->
+  <div class="limit-bar no-print" id="limitBar" style="display:none">
+    <span class="used" id="limitText">0 / 3 free exams used today</span>
+    <span class="upgrade" onclick="showModal()">Upgrade for unlimited →</span>
+  </div>
+
+  <!-- Settings -->
   <div class="card no-print">
     <div class="card-title"><span>⚙</span> Settings</div>
 
@@ -162,7 +221,7 @@ h1 em{font-style:italic;color:var(--gold)}
       <span class="sl-val" id="qv">5</span>
     </div>
 
-    <button class="gen-btn" onclick="generate()">✦ Generate Mock Exam</button>
+    <button class="gen-btn" onclick="generate()" id="genBtn">✦ Generate Mock Exam</button>
   </div>
 
   <div id="out"></div>
@@ -172,19 +231,66 @@ h1 em{font-style:italic;color:var(--gold)}
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <script src="papers.js"></script>
 <script>
-const PROXY = 'https://green-bonus-7bbb.pasiouras.workers.dev/';
-const MODEL = 'claude-haiku-4-5-20251001';
-const TOPICS = [
-  'Algebra','Functions','Trigonometry','Calculus',
-  'Statistics & Probability','Geometry','Sequences & Series',
-  'Complex Numbers','Vectors','Binomial Expansion','Logarithms & e^x','Kinematics'
-];
+const SUPABASE_URL='https://goulimqcrbkahtgkftzy.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdvdWxpbXFjcmJrYWh0Z2tmdHp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MDEwMzMsImV4cCI6MjA5NjQ3NzAzM30.mCT4yWm3TCY-nOOv-vv5S8lDALLejnFsG5Ft8BsuFrg';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const PROXY='https://green-bonus-7bbb.pasiouras.workers.dev/';
+const MODEL='claude-haiku-4-5-20251001';
+const FREE_LIMIT=3;
 
-let mode='variant', diff='sl';
-let activeTopics = new Set(['Algebra','Functions','Calculus','Trigonometry']);
+const TOPICS=['Algebra','Functions','Trigonometry','Calculus','Statistics & Probability','Geometry','Sequences & Series','Complex Numbers','Vectors','Binomial Expansion','Logarithms & e^x','Kinematics'];
 
-window.addEventListener('load', buildTopics);
+let mode='variant',diff='sl',currentUser=null,subscription=null;
+let activeTopics=new Set(['Algebra','Functions','Calculus','Trigonometry']);
 
+// ── Auth check ────────────────────────────────────────
+window.addEventListener('load',async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='auth.html';return;}
+  currentUser=session.user;
+  await loadSubscription();
+  buildTopics();
+  updateUI();
+});
+
+async function loadSubscription(){
+  const {data}=await sb.from('subscriptions').select('*').eq('user_id',currentUser.id).single();
+  subscription=data;
+  // Reset daily count if new day
+  if(subscription&&subscription.last_exam_date!==new Date().toISOString().split('T')[0]){
+    await sb.from('subscriptions').update({exams_used_today:0,last_exam_date:new Date().toISOString().split('T')[0]}).eq('user_id',currentUser.id);
+    subscription.exams_used_today=0;
+    subscription.last_exam_date=new Date().toISOString().split('T')[0];
+  }
+}
+
+function updateUI(){
+  document.getElementById('userEmail').textContent=currentUser.email;
+  const isPro=subscription?.plan==='pro'&&subscription?.status==='active';
+  const badge=document.getElementById('planBadge');
+  badge.textContent=isPro?'Pro':'Free';
+  badge.className=`plan-badge ${isPro?'pro':'free'}`;
+  if(!isPro){
+    document.getElementById('upgradeBtn').style.display='block';
+    document.getElementById('limitBar').style.display='flex';
+    updateLimitBar();
+  }
+}
+
+function updateLimitBar(){
+  const used=subscription?.exams_used_today||0;
+  document.getElementById('limitText').textContent=`${used} / ${FREE_LIMIT} free exams used today`;
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  window.location.href='auth.html';
+}
+
+function showModal(){document.getElementById('upgradeModal').style.display='flex';}
+function closeModal(){document.getElementById('upgradeModal').style.display='none';}
+
+// ── Topics ────────────────────────────────────────────
 function buildTopics(){
   const g=document.getElementById('topicChips');
   TOPICS.forEach(t=>{
@@ -200,7 +306,15 @@ function togChip(el){el.classList.toggle('on');}
 function setMode(m){mode=m;document.getElementById('mV').classList.toggle('sel',m==='variant');document.getElementById('mA').classList.toggle('sel',m==='ai');}
 function setDiff(btn,d){diff=d;document.querySelectorAll('.diff button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
+// ── Generate ──────────────────────────────────────────
 async function generate(){
+  // Check limit for free users
+  const isPro=subscription?.plan==='pro'&&subscription?.status==='active';
+  if(!isPro){
+    const used=subscription?.exams_used_today||0;
+    if(used>=FREE_LIMIT){showModal();return;}
+  }
+
   const courses=[...document.querySelectorAll('#courseChips .chip.on')].map(c=>c.textContent);
   if(!courses.length){alert('Select at least one course!');return;}
   const topics=[...document.querySelectorAll('#topicChips .chip.on')].map(c=>c.textContent);
@@ -230,19 +344,18 @@ ${bankContent}
 SETTINGS:
 - Course: ${courses.join(' / ')}
 - Level: ${diffLabel}
-- Paper type: ${paperType}
+- Paper: ${paperType}
 - Topics: ${topics.join(', ')}
 - Mode: ${modeDesc}
 
 RULES:
-- Use authentic IB command terms: Find, Show that, Hence, Write down, Determine, Sketch, Calculate
-- Structure with parts (a)(b)(c) each with their own marks
-- Use LaTeX between $ signs for ALL math expressions
-- Mark schemes: M1 (method) A1 (answer) R1 (reasoning) AG (answer given) — keep SHORT
-- Choose numbers that give clean exact answers (surds, simple fractions, integers)
-- Match the style and difficulty of the selected course
+- IB command terms: Find, Show that, Hence, Write down, Determine, Sketch
+- Parts (a)(b)(c) with marks in brackets
+- LaTeX between $ for ALL math
+- Mark schemes: M1 A1 R1 AG — SHORT (1-2 lines per part)
+- Clean exact answers
 
-Return ONLY valid JSON, absolutely no markdown or extra text:
+Return ONLY valid JSON, no markdown:
 {"title":"IB Mathematics Mock Exam","subtitle":"${courses.join(' / ')} · ${diffLabel} · ${paperType}","questions":[{"num":1,"topic":"","context":"","parts":[{"label":"(a)","text":"","marks":2}],"total_marks":5,"markscheme":""}]}`;
 
   try{
@@ -255,6 +368,16 @@ Return ONLY valid JSON, absolutely no markdown or extra text:
     clearInterval(iv);
     const pf=document.getElementById('pf');if(pf)pf.style.width='100%';
     await new Promise(r=>setTimeout(r,300));
+
+    // Update exam count
+    const newCount=(subscription?.exams_used_today||0)+1;
+    await sb.from('subscriptions').update({
+      exams_used_today:newCount,
+      last_exam_date:new Date().toISOString().split('T')[0]
+    }).eq('user_id',currentUser.id);
+    if(subscription) subscription.exams_used_today=newCount;
+    updateLimitBar();
+
     renderExam(JSON.parse(clean));
   }catch(e){
     clearInterval(iv);
@@ -277,7 +400,6 @@ function renderExam(data){
     <div class="stat"><div class="n">${total}</div><div class="l">Marks</div></div>
     <div class="stat"><div class="n">${time}'</div><div class="l">Time (~)</div></div>
   </div>`;
-
   qs.forEach((q,i)=>{
     const parts=(q.parts||[]).map(p=>`<div class="part"><span class="part-lbl">${p.label}</span><span class="part-txt">${p.text}</span><span class="part-m">[${p.marks}]</span></div>`).join('');
     const ms=(q.markscheme||'').replace(/\\n/g,'<br>').replace(/\bM1\b/g,'<span class="mk M">M1</span>').replace(/\bM2\b/g,'<span class="mk M">M2</span>').replace(/\bA1\b/g,'<span class="mk A">A1</span>').replace(/\bA2\b/g,'<span class="mk A">A2</span>').replace(/\bR1\b/g,'<span class="mk R">R1</span>').replace(/\bAG\b/g,'<span class="mk AG">AG</span>');
@@ -295,14 +417,12 @@ function renderExam(data){
       <div class="ms-box"><p>${ms}</p></div>
     </div>`;
   });
-
   html+=`<div class="actions no-print fade">
     <button class="btn btn-p" onclick="generate()">↺ New exam</button>
     <button class="btn btn-s" onclick="revealAll()">👁 Show all solutions</button>
     <button class="btn btn-g" onclick="printQuestions()">🖨 Print Questions</button>
     <button class="btn btn-g" onclick="printMarkScheme()">🖨 Print Mark Scheme</button>
   </div>`;
-
   document.getElementById('out').innerHTML=html;
   renderKatex();
 }
@@ -313,30 +433,22 @@ function togMS(btn){
   box.classList.toggle('open',open);btn.classList.toggle('open',open);
   btn.childNodes[1].textContent=' '+(open?'Hide mark scheme':'Show mark scheme');
 }
-
 function revealAll(){
   document.querySelectorAll('.ms-box').forEach(b=>b.classList.add('open'));
   document.querySelectorAll('.ms-btn').forEach(b=>{b.classList.add('open');b.childNodes[1].textContent=' Hide mark scheme';});
 }
-
 function printQuestions(){
-  const style=document.createElement('style');
-  style.id='po';
-  style.textContent='.ms-box{display:none!important}.ms-btn{display:none!important}.no-print{display:none!important}';
-  document.head.appendChild(style);
-  window.print();
+  const s=document.createElement('style');s.id='po';
+  s.textContent='.ms-box{display:none!important}.ms-btn{display:none!important}.no-print{display:none!important}';
+  document.head.appendChild(s);window.print();
   setTimeout(()=>document.getElementById('po')?.remove(),500);
 }
-
 function printMarkScheme(){
-  const style=document.createElement('style');
-  style.id='po';
-  style.textContent='.no-print{display:none!important}.ms-box{display:block!important}.ms-btn{display:none!important}.parts{display:none!important}.q-ctx{display:none!important}.exam-hd-sub::after{content:" — MARK SCHEME"}';
-  document.head.appendChild(style);
-  window.print();
+  const s=document.createElement('style');s.id='po';
+  s.textContent='.no-print{display:none!important}.ms-box{display:block!important}.ms-btn{display:none!important}.parts{display:none!important}.exam-hd-sub::after{content:" — MARK SCHEME"}';
+  document.head.appendChild(s);window.print();
   setTimeout(()=>document.getElementById('po')?.remove(),500);
 }
-
 function renderKatex(){
   if(typeof renderMathInElement==='function'){
     renderMathInElement(document.getElementById('out'),{
