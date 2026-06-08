@@ -1,5 +1,6 @@
+
 <!DOCTYPE html>
-<html lang="el">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,7 @@
   --gold:#c8a96e;--gold-d:rgba(200,169,110,0.12);--gold-b:rgba(200,169,110,0.35);
   --green:#4caf7d;--green-d:rgba(76,175,125,0.1);
   --red:#e05252;--red-d:rgba(224,82,82,0.1);
+  --blue:#5b9cf6;--blue-d:rgba(91,156,246,0.1);
   --r:10px;--rs:6px;
   --sans:'DM Sans',system-ui,sans-serif;
 }
@@ -24,32 +26,54 @@ h1{font-size:20px;font-weight:500;margin-bottom:.3rem}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;margin-bottom:1rem}
 .card-title{font-size:13px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
 label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:6px}
-input,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-size:13px;color:var(--text);font-family:var(--sans);outline:none;transition:border-color .15s;margin-bottom:1rem}
-input:focus,textarea:focus{border-color:var(--gold-b)}
-input[type=password]{font-family:monospace;letter-spacing:.1em}
-textarea{min-height:180px;resize:vertical;font-family:monospace;font-size:12px;line-height:1.6}
+input[type=text],input[type=password],textarea,select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-size:13px;color:var(--text);font-family:var(--sans);outline:none;transition:border-color .15s;margin-bottom:1rem}
+input[type=text]:focus,input[type=password]:focus,textarea:focus{border-color:var(--gold-b)}
+input[type=password]{font-family:monospace}
+textarea{min-height:160px;resize:vertical;font-family:monospace;font-size:12px;line-height:1.6}
+select{cursor:pointer}
+select option{background:var(--surface2)}
+
+.upload-zone{border:1.5px dashed var(--border-h);border-radius:var(--r);padding:2rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:1rem}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--gold-b);background:var(--gold-d)}
+.upload-zone .icon{font-size:2rem;display:block;margin-bottom:.5rem;opacity:.6}
+.upload-zone p{font-size:13px;color:var(--muted);margin-bottom:3px}
+.upload-zone small{font-size:11px;color:var(--dim)}
+input[type=file]{display:none}
+
+.file-list{display:flex;flex-direction:column;gap:6px;margin-bottom:1rem}
+.file-item{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);flex-wrap:wrap}
+.fname{flex:1;font-size:12px;min-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fsize{font-size:11px;color:var(--muted);flex-shrink:0}
+.ftag{font-size:10px;padding:2px 7px;border-radius:10px;flex-shrink:0;font-weight:500}
+.ftag.paper{background:var(--blue-d);color:var(--blue);border:1px solid rgba(91,156,246,.2)}
+.ftag.mark{background:var(--green-d);color:var(--green);border:1px solid rgba(76,175,125,.2)}
+.fsel{width:auto!important;margin:0!important;padding:3px 8px!important;font-size:11px!important;flex-shrink:0}
+.fdel{background:none;border:none;color:var(--dim);cursor:pointer;padding:2px 6px;border-radius:4px;font-size:13px;flex-shrink:0}
+.fdel:hover{color:var(--red);background:var(--red-d)}
+
 .btn{padding:10px 20px;border-radius:var(--rs);font-size:13px;font-weight:500;font-family:var(--sans);cursor:pointer;transition:all .15s;border:none}
 .btn-p{background:var(--gold);color:#0f0f0f;width:100%}
 .btn-p:hover{filter:brightness(1.1)}
 .btn-p:disabled{opacity:.35;cursor:not-allowed}
 .btn-g{background:transparent;color:var(--muted);border:1px solid var(--border);font-size:12px;padding:7px 14px}
 .btn-g:hover{color:var(--text);border-color:var(--border-h)}
-.status{padding:10px 13px;border-radius:var(--rs);font-size:12px;margin-top:.75rem;display:none}
+.btn-row{display:flex;gap:8px;margin-top:.5rem;flex-wrap:wrap}
+
+.status{padding:10px 13px;border-radius:var(--rs);font-size:12px;margin-top:.75rem;display:none;line-height:1.6}
 .status.ok{background:var(--green-d);border:1px solid rgba(76,175,125,.3);color:var(--green)}
 .status.err{background:var(--red-d);border:1px solid rgba(224,82,82,.3);color:var(--red)}
 .status.loading{background:var(--gold-d);border:1px solid var(--gold-b);color:var(--gold)}
+
+.prog-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin:.5rem 0}
+.prog-fill{height:100%;background:var(--gold);border-radius:2px;width:0;transition:width .3s ease}
+.prog-msg{font-size:11px;color:var(--muted);margin-top:4px}
+
+.sep{height:1px;background:var(--border);margin:1rem 0}
+.hint{font-size:11px;color:var(--dim);margin-top:-8px;margin-bottom:1rem;line-height:1.5}
+.count-badge{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--gold-d);color:var(--gold);border:1px solid var(--gold-b);margin-left:auto}
+
 #loginSection{display:block}
 #adminSection{display:none}
-.paper-list{display:flex;flex-direction:column;gap:6px;margin-top:.5rem}
-.paper-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);font-size:12px}
-.paper-item-name{color:var(--text)}
-.paper-item-type{font-size:10px;padding:2px 7px;border-radius:10px;margin-left:8px}
-.paper-item-type.paper{background:rgba(91,156,246,.1);color:#5b9cf6}
-.paper-item-type.mark{background:var(--green-d);color:var(--green)}
-.paper-item-del{background:none;border:none;color:var(--dim);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:4px}
-.paper-item-del:hover{color:var(--red);background:var(--red-d)}
-.sep{height:1px;background:var(--border);margin:1rem 0}
-.hint{font-size:11px;color:var(--dim);margin-top:4px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -58,226 +82,371 @@ textarea{min-height:180px;resize:vertical;font-family:monospace;font-size:12px;l
   <!-- Login -->
   <div id="loginSection">
     <h1>🔐 Admin Panel</h1>
-    <p class="sub">IB Mock Exam Generator — Διαχείριση Papers</p>
+    <p class="sub">IB Mock Exam Generator — Paper Bank Management</p>
     <div class="card">
-      <div class="card-title">🔑 Σύνδεση</div>
+      <div class="card-title">🔑 Login</div>
       <label>Admin Password</label>
-      <input type="password" id="adminPass" placeholder="Κωδικός..." onkeydown="if(event.key==='Enter')login()">
-      <button class="btn btn-p" onclick="login()">Είσοδος</button>
-      <div class="status err" id="loginErr">❌ Λάθος κωδικός</div>
+      <input type="password" id="adminPass" placeholder="Password..." onkeydown="if(event.key==='Enter')login()">
+      <button class="btn btn-p" onclick="login()">Login</button>
+      <div class="status err" id="loginErr">❌ Wrong password</div>
     </div>
   </div>
 
   <!-- Admin -->
   <div id="adminSection">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem">
-      <div>
-        <h1>📚 Admin Panel</h1>
-        <p class="sub">Διαχείριση IB Past Papers</p>
+      <div><h1>📚 Admin Panel</h1><p class="sub">IB Past Paper Bank Management</p></div>
+      <div style="display:flex;gap:8px">
+        <a href="index.html" style="text-decoration:none"><button class="btn btn-g">← Back to site</button></a>
+        <button class="btn btn-g" onclick="logout()">Logout</button>
       </div>
-      <button class="btn btn-g" onclick="logout()">Έξοδος</button>
     </div>
 
     <!-- GitHub Token -->
     <div class="card">
-      <div class="card-title">⚙ GitHub Ρυθμίσεις</div>
-      <label>GitHub Personal Access Token</label>
+      <div class="card-title">⚙ GitHub Settings</div>
+      <label>Personal Access Token</label>
       <input type="password" id="ghToken" placeholder="github_pat_...">
-      <p class="hint">Αποθηκεύεται τοπικά στον browser σου. Χρειάζεται για αυτόματη ανανέωση της σελίδας.</p>
-      <button class="btn-g btn" onclick="saveGhToken()" style="margin-top:.5rem">Αποθήκευση token</button>
-      <div class="status" id="tokenStatus"></div>
-    </div>
-
-    <!-- Current papers -->
-    <div class="card">
-      <div class="card-title">📄 Τρέχον Paper Bank</div>
-      <div id="paperList"><p style="font-size:12px;color:var(--muted)">Φόρτωση...</p></div>
-      <div class="sep"></div>
-      <label>Επεξεργασία Paper Bank (raw text)</label>
-      <textarea id="paperContent" placeholder="Φόρτωση..."></textarea>
-      <p class="hint">Μορφή: [ΚΕΦΑΛΑΙΟ] Περιγραφή ερώτησης. MARK: Απάντηση.</p>
-    </div>
-
-    <!-- Add paper -->
-    <div class="card">
-      <div class="card-title">➕ Προσθήκη Νέου Paper</div>
-      <label>Όνομα Paper</label>
-      <input type="text" id="newPaperName" placeholder="π.χ. May 2024 TZ1 Paper 1">
-      <label>Τύπος</label>
-      <div style="display:flex;gap:8px;margin-bottom:1rem">
-        <label style="display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;cursor:pointer">
-          <input type="radio" name="ptype" value="paper" checked style="width:auto;margin:0"> Question Paper
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;cursor:pointer">
-          <input type="radio" name="ptype" value="mark" style="width:auto;margin:0"> Mark Scheme
-        </label>
+      <p class="hint">Stored locally in your browser only. Required to update the paper bank.</p>
+      <div class="btn-row">
+        <button class="btn-g btn" onclick="saveGhToken()">Save token</button>
+        <span id="tokenOk" style="font-size:11px;color:var(--green);align-self:center;display:none">✓ Saved</span>
       </div>
-      <label>Ερωτήσεις & Λύσεις</label>
-      <textarea id="newPaperContent" placeholder="[ΘΕΜΑ] Περιγραφή ερώτησης με αριθμούς και δομή. MARK: Λύση βήμα-βήμα.&#10;&#10;Παράδειγμα:&#10;[CALCULUS] f(x)=3x²-2x+1. Find f'(x) and the coordinates of the minimum point. MARK: f'(x)=6x-2, min at x=1/3, f(1/3)=2/3."></textarea>
-      <button class="btn btn-p" onclick="addPaper()" id="addBtn">✦ Προσθήκη & Ανανέωση Σελίδας</button>
-      <div class="status" id="addStatus"></div>
+    </div>
+
+    <!-- Upload PDFs -->
+    <div class="card">
+      <div class="card-title">
+        ➕ Upload Past Papers
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:1rem">
+        Upload PDF files — question papers and/or mark schemes. The AI reads them automatically and adds all questions to the bank.
+      </p>
+
+      <div class="upload-zone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <span class="icon">⬆</span>
+        <p>Drag & drop PDF files here</p>
+        <small>Question papers + Mark schemes · Multiple files at once · AA SL/HL · AI SL/HL</small>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf" multiple onchange="handleFiles(this.files)">
+
+      <div class="file-list" id="fileList"></div>
+
+      <div id="processProgress" style="display:none;margin-bottom:.5rem">
+        <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+        <p class="prog-msg" id="progMsg">Processing...</p>
+      </div>
+
+      <button class="btn btn-p" id="processBtn" onclick="processPDFs()" style="display:none">
+        ✦ Process & Add to Bank
+      </button>
+      <div class="status" id="processStatus"></div>
+    </div>
+
+    <!-- Current bank -->
+    <div class="card">
+      <div class="card-title">
+        📚 Current Paper Bank
+        <span class="count-badge" id="bankCount">Loading...</span>
+      </div>
+      <div id="bankPreview" style="font-size:12px;color:var(--muted);margin-bottom:1rem">Loading...</div>
+
+      <div class="sep"></div>
+
+      <label>Edit bank directly (raw text)</label>
+      <textarea id="paperContent" placeholder="Loading..."></textarea>
+      <p class="hint">Format: [TOPIC|COURSE] Question description. MARK: Answer with M1 A1 notation.</p>
+      <div class="btn-row">
+        <button class="btn-g btn" onclick="saveRaw()">💾 Save changes</button>
+        <button class="btn-g btn" onclick="loadCurrentPapers()">↺ Refresh</button>
+        <button class="btn-g btn" onclick="clearBank()" style="color:var(--red)">🗑 Clear all</button>
+      </div>
+      <div class="status" id="saveStatus"></div>
     </div>
 
   </div>
 </div>
 
 <script>
-// ── Config ──────────────────────────────────────────────
-const ADMIN_PASSWORD = 'ibexam2024!';  // ← ΑΛΛΑΞΕ ΤΟ
+const ADMIN_PASSWORD = 'ibexam2024!';
 const GH_USER = 'pasiouras';
 const GH_REPO = 'ib-exam';
 const GH_FILE = 'papers.js';
 const GH_BRANCH = 'main';
+const PROXY = 'https://green-bonus-7bbb.pasiouras.workers.dev/';
+const MODEL = 'claude-haiku-4-5-20251001';
 
-// ── Login ───────────────────────────────────────────────
+let pendingFiles = [];
+
+// ── Login ────────────────────────────────────────────
 function login(){
-  const pass = document.getElementById('adminPass').value;
-  if(pass === ADMIN_PASSWORD){
+  if(document.getElementById('adminPass').value===ADMIN_PASSWORD){
     document.getElementById('loginSection').style.display='none';
     document.getElementById('adminSection').style.display='block';
+    const t=localStorage.getItem('gh_token');
+    if(t) document.getElementById('ghToken').value=t;
     loadCurrentPapers();
-    const savedToken = localStorage.getItem('gh_token');
-    if(savedToken) document.getElementById('ghToken').value = savedToken;
   } else {
-    const err = document.getElementById('loginErr');
-    err.style.display='block';
-    setTimeout(()=>err.style.display='none', 3000);
+    showStatus('loginErr','❌ Wrong password','err');
+    setTimeout(()=>document.getElementById('loginErr').style.display='none',3000);
   }
 }
-
 function logout(){
   document.getElementById('loginSection').style.display='block';
   document.getElementById('adminSection').style.display='none';
   document.getElementById('adminPass').value='';
 }
-
 function saveGhToken(){
-  const t = document.getElementById('ghToken').value.trim();
-  if(!t){ showStatus('tokenStatus','⚠ Βάλε το token','err'); return; }
-  localStorage.setItem('gh_token', t);
-  showStatus('tokenStatus','✓ Token αποθηκεύτηκε','ok');
+  const t=document.getElementById('ghToken').value.trim();
+  if(!t) return;
+  localStorage.setItem('gh_token',t);
+  document.getElementById('tokenOk').style.display='inline';
+  setTimeout(()=>document.getElementById('tokenOk').style.display='none',3000);
 }
 
-// ── Load current papers from GitHub ─────────────────────
+// ── Course type detection ────────────────────────────
+function detectCourse(filename){
+  const f=filename.toLowerCase();
+  if(/aa.{0,5}hl|analysis.{0,15}higher|mathx.{0,5}h[p1]/i.test(f)) return 'AA HL';
+  if(/aa.{0,5}sl|analysis.{0,15}standard|mathx.{0,5}s[p1]/i.test(f)) return 'AA SL';
+  if(/ai.{0,5}hl|applications.{0,15}higher|mathy.{0,5}h[p1]/i.test(f)) return 'AI HL';
+  if(/ai.{0,5}sl|applications.{0,15}standard|mathy.{0,5}s[p1]/i.test(f)) return 'AI SL';
+  return 'AA SL'; // default
+}
+
+// ── File handling ────────────────────────────────────
+function handleFiles(files){
+  Array.from(files).forEach(f=>{
+    if(!pendingFiles.find(x=>x.file.name===f.name)){
+      pendingFiles.push({
+        file: f,
+        course: detectCourse(f.name),
+        isMark: /mark.?scheme|markscheme|\bms\b|_m\b/i.test(f.name)
+      });
+    }
+  });
+  renderFileList();
+  document.getElementById('processBtn').style.display=pendingFiles.length?'block':'none';
+}
+
+function renderFileList(){
+  const el=document.getElementById('fileList');
+  el.innerHTML='';
+  pendingFiles.forEach((item,i)=>{
+    el.innerHTML+=`<div class="file-item">
+      <span style="font-size:15px">📄</span>
+      <span class="fname">${item.file.name}</span>
+      <span class="fsize">${(item.file.size/1024).toFixed(0)}KB</span>
+      <span class="ftag ${item.isMark?'mark':'paper'}">${item.isMark?'Mark Scheme':'Paper'}</span>
+      <select class="fsel" onchange="pendingFiles[${i}].course=this.value">
+        ${['AA SL','AA HL','AI SL','AI HL'].map(c=>`<option ${c===item.course?'selected':''}>${c}</option>`).join('')}
+      </select>
+      <button class="fdel" onclick="removeFile(${i})">✕</button>
+    </div>`;
+  });
+}
+
+function removeFile(i){
+  pendingFiles.splice(i,1);
+  renderFileList();
+  document.getElementById('processBtn').style.display=pendingFiles.length?'block':'none';
+}
+
+const dz=document.getElementById('dropzone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');handleFiles(e.dataTransfer.files)});
+
+// ── Process PDFs ─────────────────────────────────────
+async function processPDFs(){
+  const ghToken=document.getElementById('ghToken').value.trim()||localStorage.getItem('gh_token');
+  if(!ghToken){showStatus('processStatus','⚠ Add GitHub token first','err');return;}
+  if(!pendingFiles.length){showStatus('processStatus','⚠ No files selected','err');return;}
+
+  document.getElementById('processBtn').disabled=true;
+  document.getElementById('processProgress').style.display='block';
+  showStatus('processStatus','⏳ Processing...','loading');
+
+  let allExtracted='';
+  let processed=0;
+
+  for(const item of pendingFiles){
+    const {file,course,isMark}=item;
+    setProgress(Math.round(processed/pendingFiles.length*65),`Reading ${file.name}...`);
+
+    try{
+      const base64=await toBase64(file);
+      setProgress(Math.round(processed/pendingFiles.length*65)+10,`AI extracting from ${file.name}...`);
+
+      const typeLabel=isMark?'mark scheme':'question paper';
+      const prompt=isMark
+        ?`This is an IB Mathematics ${course} ${typeLabel}. Extract ALL answers/solutions in this exact format — one line per question:
+[TOPIC|${course}|MS] Question description. MARK: Full solution with M1 A1 R1 AG notation.
+Return ONLY the extracted lines, no intro, no explanation.`
+        :`This is an IB Mathematics ${course} ${typeLabel}. Extract ALL questions in this exact format — one line per question:
+[TOPIC|${course}] Full question with all numbers, functions, conditions, and sub-parts (a)(b)(c).
+Return ONLY the extracted lines, no intro, no explanation.`;
+
+      const resp=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:MODEL,max_tokens:4000,
+          messages:[{role:'user',content:[
+            {type:'document',source:{type:'base64',media_type:'application/pdf',data:base64}},
+            {type:'text',text:prompt}
+          ]}]
+        })
+      });
+
+      const data=await resp.json();
+      const extracted=(data.content||[]).map(c=>c.text||'').join('').trim();
+      allExtracted+=`\n\n// === ${file.name} [${course}${isMark?' — Mark Scheme':''}] ===\n${extracted}`;
+
+    }catch(e){
+      allExtracted+=`\n\n// === ${file.name} — Error: ${e.message} ===`;
+    }
+    processed++;
+  }
+
+  setProgress(75,'Saving to GitHub...');
+
+  try{
+    await pushToGitHub(ghToken, allExtracted, `Add: ${pendingFiles.map(i=>i.file.name).join(', ')}`);
+    setProgress(100,'Done!');
+    showStatus('processStatus',`✅ ${pendingFiles.length} file(s) processed! Netlify will update in ~30 seconds.`,'ok');
+    pendingFiles=[];
+    renderFileList();
+    document.getElementById('processBtn').style.display='none';
+    document.getElementById('processProgress').style.display='none';
+    setTimeout(loadCurrentPapers,4000);
+  }catch(e){
+    showStatus('processStatus',`❌ GitHub error: ${e.message}`,'err');
+  }finally{
+    document.getElementById('processBtn').disabled=false;
+  }
+}
+
+// ── GitHub helpers ───────────────────────────────────
+async function pushToGitHub(token, appendContent, commitMsg){
+  const fileResp=await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
+    headers:{'Authorization':`token ${token}`}
+  });
+  if(!fileResp.ok) throw new Error('Cannot read papers.js from GitHub. Make sure the file exists in your repo.');
+  const fileData=await fileResp.json();
+  const sha=fileData.sha;
+  const current=decodeURIComponent(escape(atob(fileData.content.replace(/\n/g,''))));
+  const match=current.match(/const PAPER_BANK\s*=\s*`([\s\S]*?)`;/);
+  const bank=(match?match[1]:'')+(appendContent||'');
+  const newFile=`// IB Past Paper Bank — managed via admin panel\nconst PAPER_BANK = \`${bank}\`;`;
+
+  const pushResp=await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
+    method:'PUT',
+    headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},
+    body:JSON.stringify({message:commitMsg,content:btoa(unescape(encodeURIComponent(newFile))),sha,branch:GH_BRANCH})
+  });
+  if(!pushResp.ok){const e=await pushResp.json();throw new Error(e.message);}
+}
+
+// ── Load bank ────────────────────────────────────────
 async function loadCurrentPapers(){
   try{
-    const resp = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${GH_FILE}?t=${Date.now()}`);
-    if(!resp.ok) throw new Error('Δεν βρέθηκε το αρχείο στο GitHub');
-    const text = await resp.text();
-    // Extract content between backticks
-    const match = text.match(/const PAPER_BANK\s*=\s*`([\s\S]*?)`;/);
-    if(match){
-      document.getElementById('paperContent').value = match[1].trim();
-      renderPaperList(match[1]);
-    }
+    const resp=await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${GH_FILE}?t=${Date.now()}`);
+    if(!resp.ok) throw new Error('File not found');
+    const text=await resp.text();
+    const match=text.match(/const PAPER_BANK\s*=\s*`([\s\S]*?)`;/);
+    const content=match?match[1].trim():'';
+    document.getElementById('paperContent').value=content;
+    updateBankUI(content);
   }catch(e){
-    document.getElementById('paperList').innerHTML=`<p style="font-size:12px;color:var(--red)">⚠ ${e.message} — Βεβαιώσου ότι το repo υπάρχει.</p>`;
+    document.getElementById('bankPreview').innerHTML=`<span style="color:var(--red)">⚠ ${e.message}</span>`;
+    document.getElementById('bankCount').textContent='Error';
   }
 }
 
-function renderPaperList(content){
-  const lines = content.split('\n').filter(l=>l.trim().startsWith('['));
-  const list = document.getElementById('paperList');
-  if(!lines.length){ list.innerHTML='<p style="font-size:12px;color:var(--muted)">Κανένα paper ακόμα.</p>'; return; }
-  list.innerHTML = lines.map((l,i)=>{
-    const topic = l.match(/\[([^\]]+)\]/)?.[1]||'';
-    return `<div class="paper-item">
-      <span class="paper-item-name">${topic}</span>
-      <button class="paper-item-del" onclick="deletePaper(${i})" title="Διαγραφή">✕</button>
-    </div>`;
-  }).join('');
+function updateBankUI(content){
+  const lines=content.split('\n').filter(l=>l.trim().startsWith('['));
+  const aaSL=lines.filter(l=>l.includes('|AA SL')).length;
+  const aaHL=lines.filter(l=>l.includes('|AA HL')).length;
+  const aiSL=lines.filter(l=>l.includes('|AI SL')).length;
+  const aiHL=lines.filter(l=>l.includes('|AI HL')).length;
+  const other=lines.length-aaSL-aaHL-aiSL-aiHL;
+
+  document.getElementById('bankCount').textContent=`${lines.length} questions`;
+  document.getElementById('bankPreview').innerHTML=lines.length
+    ?`<div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${aaSL?`<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(91,156,246,.1);color:#5b9cf6;border:1px solid rgba(91,156,246,.2)">AA SL: ${aaSL}</span>`:''}
+        ${aaHL?`<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:var(--gold-d);color:var(--gold);border:1px solid var(--gold-b)">AA HL: ${aaHL}</span>`:''}
+        ${aiSL?`<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:var(--green-d);color:var(--green);border:1px solid rgba(76,175,125,.2)">AI SL: ${aiSL}</span>`:''}
+        ${aiHL?`<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:var(--red-d);color:var(--red);border:1px solid rgba(224,82,82,.2)">AI HL: ${aiHL}</span>`:''}
+        ${other?`<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:var(--surface2);color:var(--muted);border:1px solid var(--border)">Other: ${other}</span>`:''}
+      </div>`
+    :'<span style="color:var(--muted)">Bank is empty. Upload past papers to get started.</span>';
 }
 
-// ── Add paper ────────────────────────────────────────────
-async function addPaper(){
-  const name = document.getElementById('newPaperName').value.trim();
-  const content = document.getElementById('newPaperContent').value.trim();
-  const type = document.querySelector('input[name=ptype]:checked').value;
-  const ghToken = document.getElementById('ghToken').value.trim() || localStorage.getItem('gh_token');
-
-  if(!name || !content){ showStatus('addStatus','⚠ Συμπλήρωσε όνομα και περιεχόμενο','err'); return; }
-  if(!ghToken){ showStatus('addStatus','⚠ Βάλε GitHub token στις ρυθμίσεις','err'); return; }
-
-  showStatus('addStatus','⏳ Ανανέωση GitHub...','loading');
-  document.getElementById('addBtn').disabled=true;
-
+async function saveRaw(){
+  const ghToken=document.getElementById('ghToken').value.trim()||localStorage.getItem('gh_token');
+  if(!ghToken){showStatus('saveStatus','⚠ Add GitHub token first','err');return;}
+  showStatus('saveStatus','⏳ Saving...','loading');
   try{
-    // Get current file SHA and content
-    const fileResp = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
-      headers:{'Authorization':`token ${ghToken}`,'Accept':'application/vnd.github.v3+json'}
-    });
-    if(!fileResp.ok) throw new Error('Δεν βρέθηκε το αρχείο. Βεβαιώσου ότι έχεις ανεβάσει το papers.js στο GitHub.');
-    const fileData = await fileResp.json();
-    const sha = fileData.sha;
-
-    // Get current content
-    const currentContent = atob(fileData.content.replace(/\n/g,''));
-    const match = currentContent.match(/const PAPER_BANK\s*=\s*`([\s\S]*?)`;/);
-    const currentBank = match ? match[1].trim() : '';
-
-    // Add new paper
-    const newEntry = `\n[${name.toUpperCase()} — ${type==='mark'?'MARK SCHEME':'PAPER'}] ${content}`;
-    const newBank = currentBank + newEntry;
-
-    // Build new file
-    const newFile = `// IB Past Paper Bank — επεξεργάσιμο από το admin panel\nconst PAPER_BANK = \`${newBank}\`;`;
-
-    // Push to GitHub
-    const pushResp = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
-      method:'PUT',
-      headers:{'Authorization':`token ${ghToken}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-      body:JSON.stringify({
-        message:`Add paper: ${name}`,
-        content:btoa(unescape(encodeURIComponent(newFile))),
-        sha:sha,
-        branch:GH_BRANCH
-      })
-    });
-    if(!pushResp.ok){const e=await pushResp.json();throw new Error(e.message);}
-
-    showStatus('addStatus','✅ Προστέθηκε! Η σελίδα θα ανανεωθεί σε ~30 δευτερόλεπτα (Netlify deploy).','ok');
-    document.getElementById('newPaperName').value='';
-    document.getElementById('newPaperContent').value='';
-    setTimeout(loadCurrentPapers, 3000);
-
-  }catch(e){
-    showStatus('addStatus',`❌ Σφάλμα: ${e.message}`,'err');
-  }finally{
-    document.getElementById('addBtn').disabled=false;
-  }
-}
-
-// ── Delete paper ─────────────────────────────────────────
-async function deletePaper(idx){
-  if(!confirm('Να διαγραφεί αυτό το paper;')) return;
-  const ghToken = document.getElementById('ghToken').value.trim() || localStorage.getItem('gh_token');
-  if(!ghToken){ alert('Βάλε GitHub token!'); return; }
-
-  const currentContent = document.getElementById('paperContent').value;
-  const lines = currentContent.split('\n');
-  const paperLines = lines.filter(l=>l.trim().startsWith('['));
-  const lineToRemove = paperLines[idx];
-  const newContent = lines.filter(l=>l!==lineToRemove).join('\n');
-
-  try{
-    const fileResp = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
+    const content=document.getElementById('paperContent').value;
+    const fileResp=await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
       headers:{'Authorization':`token ${ghToken}`}
     });
-    const fileData = await fileResp.json();
-    const newFile = `// IB Past Paper Bank — επεξεργάσιμο από το admin panel\nconst PAPER_BANK = \`${newContent}\`;`;
+    const fileData=await fileResp.json();
+    const newFile=`// IB Past Paper Bank — managed via admin panel\nconst PAPER_BANK = \`${content}\`;`;
+    const pushResp=await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
+      method:'PUT',
+      headers:{'Authorization':`token ${ghToken}`,'Content-Type':'application/json'},
+      body:JSON.stringify({message:'Update paper bank',content:btoa(unescape(encodeURIComponent(newFile))),sha:fileData.sha,branch:GH_BRANCH})
+    });
+    if(!pushResp.ok)throw new Error('Push failed');
+    showStatus('saveStatus','✅ Saved! Netlify updates in ~30 seconds.','ok');
+    updateBankUI(content);
+  }catch(e){showStatus('saveStatus',`❌ Error: ${e.message}`,'err');}
+}
+
+async function clearBank(){
+  if(!confirm('Clear ALL papers from the bank? This cannot be undone.')) return;
+  const ghToken=document.getElementById('ghToken').value.trim()||localStorage.getItem('gh_token');
+  if(!ghToken){alert('Add GitHub token first!');return;}
+  showStatus('saveStatus','⏳ Clearing...','loading');
+  try{
+    const fileResp=await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
+      headers:{'Authorization':`token ${ghToken}`}
+    });
+    const fileData=await fileResp.json();
+    const newFile=`// IB Past Paper Bank — managed via admin panel\nconst PAPER_BANK = \`\`;`;
     await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
       method:'PUT',
       headers:{'Authorization':`token ${ghToken}`,'Content-Type':'application/json'},
-      body:JSON.stringify({message:'Delete paper',content:btoa(unescape(encodeURIComponent(newFile))),sha:fileData.sha,branch:GH_BRANCH})
+      body:JSON.stringify({message:'Clear paper bank',content:btoa(unescape(encodeURIComponent(newFile))),sha:fileData.sha,branch:GH_BRANCH})
     });
-    loadCurrentPapers();
-  }catch(e){ alert('Σφάλμα: '+e.message); }
+    document.getElementById('paperContent').value='';
+    updateBankUI('');
+    showStatus('saveStatus','✅ Bank cleared.','ok');
+  }catch(e){showStatus('saveStatus',`❌ Error: ${e.message}`,'err');}
 }
 
-function showStatus(id, msg, type){
+// ── Utilities ────────────────────────────────────────
+function toBase64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result.split(',')[1]);
+    r.onerror=()=>rej(new Error('Failed to read file'));
+    r.readAsDataURL(file);
+  });
+}
+
+function setProgress(pct,msg){
+  const pf=document.getElementById('progFill');
+  const pm=document.getElementById('progMsg');
+  if(pf)pf.style.width=pct+'%';
+  if(pm)pm.textContent=msg;
+}
+
+function showStatus(id,msg,type){
   const el=document.getElementById(id);
+  if(!el)return;
   el.textContent=msg;el.className=`status ${type}`;el.style.display='block';
-  if(type==='ok') setTimeout(()=>el.style.display='none',5000);
+  if(type==='ok')setTimeout(()=>el.style.display='none',6000);
 }
 </script>
 </body>
