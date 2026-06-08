@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IB Math Mock Exam Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--surface:#171717;--surface2:#1e1e1e;
+  --border:rgba(255,255,255,0.08);--border-h:rgba(255,255,255,0.16);
+  --text:#f0ede8;--muted:#888;--dim:#555;
+  --gold:#c8a96e;--gold-d:rgba(200,169,110,0.12);--gold-b:rgba(200,169,110,0.35);
+  --green:#4caf7d;--green-d:rgba(76,175,125,0.1);
+  --red:#e05252;--red-d:rgba(224,82,82,0.1);
+  --blue:#5b9cf6;
+  --r:10px;--rs:6px;
+  --serif:'DM Serif Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
+.page{max-width:800px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';display:inline-block;width:20px;height:1px;background:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:400;letter-spacing:-.02em;line-height:1.1;margin-bottom:.6rem}
+h1 em{font-style:italic;color:var(--gold)}
+.subtitle{font-size:13px;color:var(--muted);max-width:460px;line-height:1.7;margin-bottom:2rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;margin-bottom:1rem}
+.card-title{font-size:13px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.card-title span{font-size:16px}
+.lbl{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:6px;display:block;margin-top:1rem}
+.lbl:first-child{margin-top:0}
+.key-row{display:flex;gap:8px;margin-top:8px}
+.key-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px;font-size:12px;color:var(--text);font-family:monospace;outline:none;transition:border-color .15s}
+.key-row input:focus{border-color:var(--gold-b)}
+.key-row button{padding:8px 14px;background:var(--gold-d);border:1px solid var(--gold-b);border-radius:var(--rs);color:var(--gold);font-size:12px;cursor:pointer;font-family:var(--sans);transition:all .15s;white-space:nowrap}
+.key-row button:hover{background:var(--gold);color:#0f0f0f}
+.key-status{font-size:11px;color:var(--dim);margin-top:6px}
+.key-note{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+.key-note code{font-size:10px;background:var(--surface2);padding:1px 5px;border-radius:3px;color:var(--gold)}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mode-card{padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s}
+.mode-card:hover{border-color:var(--border-h)}
+.mode-card.sel{border-color:var(--gold-b);background:var(--gold-d)}
+.mode-card .ic{font-size:18px;margin-bottom:6px}
+.mode-card h4{font-size:12px;font-weight:500;margin-bottom:2px}
+.mode-card p{font-size:11px;color:var(--muted);line-height:1.4}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;transition:all .12s;color:var(--muted);font-family:var(--sans);background:transparent}
+.chip:hover{border-color:var(--border-h);color:var(--text)}
+.chip.on{border-color:var(--gold-b);background:var(--gold-d);color:var(--gold)}
+.diff{display:flex;gap:6px}
+.diff button{flex:1;padding:7px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--muted);font-family:var(--sans);transition:all .12s}
+.diff button:hover{border-color:var(--border-h)}
+.diff button.on.sl{border-color:var(--green);background:var(--green-d);color:var(--green)}
+.diff button.on.hl{border-color:var(--gold-b);background:var(--gold-d);color:var(--gold)}
+.diff button.on.hlp{border-color:rgba(224,82,82,.4);background:var(--red-d);color:var(--red)}
+.sl-row{display:flex;align-items:center;gap:12px}
+.sl-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:3px;background:var(--border-h);border-radius:2px;outline:none;cursor:pointer}
+.sl-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer}
+.sl-val{font-size:14px;font-weight:500;color:var(--gold);min-width:24px;text-align:right}
+.gen-btn{width:100%;padding:13px;margin-top:1.2rem;background:var(--gold);color:#0f0f0f;border:none;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.gen-btn:hover{filter:brightness(1.1)}
+.gen-btn:disabled{opacity:.35;cursor:not-allowed}
+.prog-wrap{padding:1.5rem;text-align:center}
+.prog-track{height:2px;background:var(--border);border-radius:2px;overflow:hidden;margin:.8rem 0}
+.prog-fill{height:100%;background:var(--gold);border-radius:2px;width:0;transition:width .4s ease}
+.prog-msg{font-size:12px;color:var(--muted)}
+.exam-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.75rem}
+.exam-hd-title{font-family:var(--serif);font-size:18px;font-weight:400;margin-bottom:3px}
+.exam-hd-sub{font-size:11px;color:var(--muted)}
+.exam-badge{font-size:11px;padding:4px 10px;border-radius:20px;background:var(--gold-d);color:var(--gold);border:1px solid var(--gold-b);white-space:nowrap;flex-shrink:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.75rem}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center}
+.stat .n{font-size:22px;font-weight:500;color:var(--gold)}
+.stat .l{font-size:10px;color:var(--muted);margin-top:1px}
+.q{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;margin-bottom:.6rem;transition:border-color .2s}
+.q:hover{border-color:var(--border-h)}
+.q-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.q-num{width:26px;height:26px;border-radius:50%;background:var(--gold-d);border:1px solid var(--gold-b);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--gold);flex-shrink:0}
+.q-info{flex:1}
+.q-topic{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.q-ctx{font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.6}
+.q-total{font-size:11px;color:var(--muted);padding:3px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;white-space:nowrap;margin-left:auto;align-self:flex-start}
+.parts{border-left:2px solid var(--border);padding-left:14px}
+.part{margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.part-lbl{font-size:12px;color:var(--gold);font-weight:500;min-width:28px;padding-top:1px}
+.part-txt{font-size:13px;line-height:1.65;flex:1}
+.part-m{font-size:11px;color:var(--dim);white-space:nowrap;padding-top:2px}
+.ms-btn{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim);cursor:pointer;padding:5px 0 0;background:none;border:none;font-family:var(--sans);transition:color .15s}
+.ms-btn:hover{color:var(--green)}
+.ms-btn svg{transition:transform .2s}
+.ms-btn.open svg{transform:rotate(180deg)}
+.ms-box{display:none;margin-top:10px;padding:12px;background:var(--surface2);border-radius:var(--rs);border-left:2px solid var(--green)}
+.ms-box.open{display:block}
+.ms-box p{font-size:12px;line-height:1.8;color:var(--muted)}
+.mk{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin:0 2px;font-weight:500}
+.mk.M{background:rgba(91,156,246,.15);color:var(--blue)}
+.mk.A{background:rgba(76,175,125,.15);color:var(--green)}
+.mk.R{background:rgba(200,169,110,.15);color:var(--gold)}
+.mk.AG{background:rgba(255,255,255,.07);color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.btn{padding:9px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;font-family:var(--sans);cursor:pointer;transition:all .15s;border:none}
+.btn-p{background:var(--gold);color:#0f0f0f}
+.btn-p:hover{filter:brightness(1.1)}
+.btn-s{background:var(--surface2);color:var(--text);border:1px solid var(--border-h)}
+.btn-s:hover{background:var(--surface)}
+.btn-g{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-g:hover{color:var(--text);border-color:var(--border-h)}
+.err{padding:12px 14px;background:var(--red-d);border:1px solid rgba(224,82,82,.3);border-radius:var(--rs);font-size:12px;color:var(--red)}
+.info{padding:10px 13px;background:rgba(91,156,246,.08);border:1px solid rgba(91,156,246,.2);border-radius:var(--rs);font-size:12px;color:var(--blue);margin-bottom:1rem}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadeUp .35s ease both}
+@media print{.no-print{display:none!important}.ms-box{display:block!important}}
+@media(max-width:500px){.mode-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">IB Mathematics AA</div>
+  <h1>Mock Exam <em>Generator</em></h1>
+  <p class="subtitle">Επέλεξε κεφάλαια και δυσκολία — το AI δημιουργεί νέο mock exam αμέσως.</p>
+
+  <!-- API Key -->
+  <div class="card no-print" id="keyCard">
+    <div class="card-title"><span>🔑</span> Anthropic API Key</div>
+    <p class="key-note">Βάλε το API key σου από το <code>console.anthropic.com</code></p>
+    <div class="key-row">
+      <input type="password" id="apiKey" placeholder="sk-ant-api03-..." autocomplete="off">
+      <button onclick="saveKey()">Αποθήκευση</button>
+    </div>
+    <p class="key-status" id="keyStatus"></p>
+  </div>
+
+  <!-- Config -->
+  <div class="card no-print">
+    <div class="card-title"><span>⚙</span> Ρυθμίσεις</div>
+
+    <span class="lbl">Τύπος</span>
+    <div class="mode-grid">
+      <div class="mode-card sel" id="mV" onclick="setMode('variant')">
+        <div class="ic">🔄</div>
+        <h4>Παραλλαγή</h4>
+        <p>Ίδια δομή από past papers, νέα νούμερα</p>
+      </div>
+      <div class="mode-card" id="mA" onclick="setMode('ai')">
+        <div class="ic">✨</div>
+        <h4>AI-generated</h4>
+        <p>Νέες πρωτότυπες ερωτήσεις IB στυλ</p>
+      </div>
+    </div>
+
+    <span class="lbl">Paper</span>
+    <div class="chips">
+      <div class="chip on" id="cp1" onclick="togChip(this)">Paper 1 (no calc)</div>
+      <div class="chip" id="cp2" onclick="togChip(this)">Paper 2 (calc)</div>
+    </div>
+
+    <span class="lbl">Κεφάλαια</span>
+    <div class="chips" id="topicChips"></div>
+
+    <span class="lbl">Δυσκολία</span>
+    <div class="diff">
+      <button class="on sl" onclick="setDiff(this,'sl')">SL</button>
+      <button onclick="setDiff(this,'hl')" class="hl">HL</button>
+      <button onclick="setDiff(this,'hlp')" class="hlp">HL+</button>
+    </div>
+
+    <span class="lbl">Αριθμός ερωτήσεων</span>
+    <div class="sl-row">
+      <input type="range" min="2" max="10" value="5" step="1" id="qc"
+             oninput="document.getElementById('qv').textContent=this.value">
+      <span class="sl-val" id="qv">5</span>
+    </div>
+
+    <button class="gen-btn" onclick="generate()">✦ Δημιούργησε Mock Exam</button>
+  </div>
+
+  <div id="out"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="papers.js"></script>
+<script>
+const PROXY = 'https://green-bonus-7bbb.pasiouras.workers.dev/';
+const MODEL = 'claude-haiku-4-5-20251001';
+const TOPICS = [
+  'Άλγεβρα','Συναρτήσεις','Τριγωνομετρία','Απειροστικός Λ.',
+  'Στατιστική & Πιθανότητα','Γεωμετρία','Ακολουθίες & Σειρές',
+  'Μιγαδικοί','Διανύσματα','Διωνυμική Ανάπτυξη','Λογαρίθμοι & e^x','Κινηματική'
+];
+
+let apiKey='', mode='variant', diff='sl';
+let activeTopics=new Set(['Άλγεβρα','Συναρτήσεις','Απειροστικός Λ.','Τριγωνομετρία']);
+
+window.addEventListener('load',()=>{
+  const s=localStorage.getItem('ib_ak');
+  if(s){apiKey=s;document.getElementById('apiKey').value=s;setKeyStatus('✓ Key φορτώθηκε',true);}
+  buildTopics();
+});
+
+function buildTopics(){
+  const g=document.getElementById('topicChips');
+  TOPICS.forEach(t=>{
+    const d=document.createElement('div');
+    d.className='chip'+(activeTopics.has(t)?' on':'');
+    d.textContent=t;
+    d.onclick=()=>{activeTopics.has(t)?activeTopics.delete(t):activeTopics.add(t);d.classList.toggle('on');};
+    g.appendChild(d);
+  });
+}
+
+function saveKey(){
+  const v=document.getElementById('apiKey').value.trim();
+  if(!v.startsWith('sk-ant')){setKeyStatus('⚠ Ξεκινά με sk-ant-...',false);return;}
+  apiKey=v;localStorage.setItem('ib_ak',v);setKeyStatus('✓ Αποθηκεύτηκε',true);
+}
+function setKeyStatus(msg,ok){
+  const el=document.getElementById('keyStatus');
+  el.textContent=msg;el.style.color=ok?'var(--green)':'var(--red)';
+}
+function setMode(m){mode=m;document.getElementById('mV').classList.toggle('sel',m==='variant');document.getElementById('mA').classList.toggle('sel',m==='ai');}
+function togChip(el){el.classList.toggle('on');}
+function setDiff(btn,d){diff=d;document.querySelectorAll('.diff button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+
+async function generate(){
+  if(!apiKey){alert('Βάλε πρώτα το API key!');return;}
+  const topics=[...document.querySelectorAll('#topicChips .chip.on')].map(c=>c.textContent);
+  if(!topics.length){alert('Επέλεξε τουλάχιστον ένα κεφάλαιο!');return;}
+  const count=parseInt(document.getElementById('qc').value);
+  const paperType=document.getElementById('cp1').classList.contains('on')?'Paper 1 (no calculator)':'Paper 2 (calculator)';
+  const diffLabel={sl:'SL',hl:'HL',hlp:'HL+ challenging'}[diff];
+  const modeDesc=mode==='variant'?'Create variants: same structure, different numbers.':'Create original IB-style questions.';
+
+  // Get papers from papers.js (loaded as global PAPER_BANK)
+  const bankContent = typeof PAPER_BANK !== 'undefined' ? PAPER_BANK : 'No papers loaded.';
+
+  const out=document.getElementById('out');
+  out.innerHTML=`<div class="card prog-wrap fade">
+    <div style="font-size:1.5rem;animation:spin 1s linear infinite;display:inline-block">⟳</div>
+    <div class="prog-track"><div class="prog-fill" id="pf"></div></div>
+    <p class="prog-msg" id="pm">Δημιουργία ${count} ερωτήσεων…</p>
+  </div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+
+  let p=0;
+  const iv=setInterval(()=>{p=Math.min(p+1.2,88);const el=document.getElementById('pf');if(el)el.style.width=p+'%';},120);
+
+  const prompt=`You are an IB Mathematics AA examiner. Generate EXACTLY ${count} exam questions.
+
+PAST PAPER BANK:
+${bankContent}
+
+SETTINGS: ${diffLabel} · ${paperType} · Topics: ${topics.join(', ')}
+MODE: ${modeDesc}
+
+RULES:
+- IB command terms: Find, Show that, Hence, Write down, Determine, Sketch
+- Parts (a)(b)(c) with marks in [brackets]
+- LaTeX between $ signs for ALL math
+- Mark schemes: M1 A1 R1 AG — SHORT (1-2 lines per part)
+- Clean exact answers (surds, fractions, integers)
+
+Return ONLY valid JSON, no markdown:
+{"title":"IB Mathematics AA — Mock Exam","subtitle":"${diffLabel} · ${paperType}","questions":[{"num":1,"topic":"","context":"","parts":[{"label":"(a)","text":"","marks":2}],"total_marks":5,"markscheme":""}]}`;
+
+  try{
+    const resp=await fetch(PROXY,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({apiKey,model:MODEL,max_tokens:8000,messages:[{role:'user',content:prompt}]})
+    });
+    if(!resp.ok)throw new Error(`HTTP ${resp.status}`);
+    const data=await resp.json();
+    const raw=(data.content||[]).map(c=>c.text||'').join('');
+    const clean=raw.replace(/```json\n?|\n?```/g,'').trim();
+    clearInterval(iv);
+    const pf=document.getElementById('pf');if(pf)pf.style.width='100%';
+    await new Promise(r=>setTimeout(r,300));
+    renderExam(JSON.parse(clean));
+  }catch(e){
+    clearInterval(iv);
+    out.innerHTML=`<div class="err">✕ Σφάλμα: ${e.message}<br><small>Δοκίμασε ξανά ή μείωσε τον αριθμό ερωτήσεων.</small></div>`;
+  }
+}
+
+function renderExam(data){
+  const qs=data.questions||[];
+  const total=qs.reduce((s,q)=>s+(q.total_marks||0),0);
+  const time=Math.round(total*1.5);
+  let html=`
+  <div class="exam-hd fade">
+    <div><div class="exam-hd-title">${data.title||'IB Math AA Mock Exam'}</div>
+    <div class="exam-hd-sub">${data.subtitle||''}</div></div>
+    <span class="exam-badge">${total} marks</span>
+  </div>
+  <div class="stats fade">
+    <div class="stat"><div class="n">${qs.length}</div><div class="l">Ερωτήσεις</div></div>
+    <div class="stat"><div class="n">${total}</div><div class="l">Marks</div></div>
+    <div class="stat"><div class="n">${time}'</div><div class="l">Χρόνος (~)</div></div>
+  </div>`;
+  qs.forEach((q,i)=>{
+    const parts=(q.parts||[]).map(p=>`<div class="part"><span class="part-lbl">${p.label}</span><span class="part-txt">${p.text}</span><span class="part-m">[${p.marks}]</span></div>`).join('');
+    const ms=(q.markscheme||'').replace(/\\n/g,'<br>').replace(/\bM1\b/g,'<span class="mk M">M1</span>').replace(/\bM2\b/g,'<span class="mk M">M2</span>').replace(/\bA1\b/g,'<span class="mk A">A1</span>').replace(/\bA2\b/g,'<span class="mk A">A2</span>').replace(/\bR1\b/g,'<span class="mk R">R1</span>').replace(/\bAG\b/g,'<span class="mk AG">AG</span>');
+    html+=`<div class="q fade" style="animation-delay:${i*.04}s">
+      <div class="q-top">
+        <div class="q-num">${q.num||i+1}</div>
+        <div class="q-info"><div class="q-topic">${q.topic||''}</div>${q.context?`<div class="q-ctx">${q.context}</div>`:''}</div>
+        <span class="q-total">[${q.total_marks||'?'} marks]</span>
+      </div>
+      <div class="parts">${parts}</div>
+      <button class="ms-btn" onclick="togMS(this)">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Εμφάνιση mark scheme
+      </button>
+      <div class="ms-box"><p>${ms}</p></div>
+    </div>`;
+  });
+  html+=`<div class="actions no-print fade">
+    <button class="btn btn-p" onclick="generate()">↺ Νέο exam</button>
+    <button class="btn btn-s" onclick="revealAll()">👁 Όλες οι λύσεις</button>
+    <button class="btn btn-g" onclick="window.print()">🖨 Εκτύπωση</button>
+  </div>`;
+  document.getElementById('out').innerHTML=html;
+  renderKatex();
+}
+
+function togMS(btn){
+  const box=btn.nextElementSibling;
+  const open=!box.classList.contains('open');
+  box.classList.toggle('open',open);btn.classList.toggle('open',open);
+  btn.childNodes[1].textContent=' '+(open?'Απόκρυψη mark scheme':'Εμφάνιση mark scheme');
+}
+function revealAll(){
+  document.querySelectorAll('.ms-box').forEach(b=>b.classList.add('open'));
+  document.querySelectorAll('.ms-btn').forEach(b=>{b.classList.add('open');b.childNodes[1].textContent=' Απόκρυψη mark scheme';});
+}
+function renderKatex(){
+  if(typeof renderMathInElement==='function'){
+    renderMathInElement(document.getElementById('out'),{
+      delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],
+      throwOnError:false
+    });
+  }
+}
+</script>
+</body>
+</html>

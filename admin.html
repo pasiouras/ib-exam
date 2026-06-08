@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — IB Exam Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--surface:#171717;--surface2:#1e1e1e;
+  --border:rgba(255,255,255,0.08);--border-h:rgba(255,255,255,0.16);
+  --text:#f0ede8;--muted:#888;--dim:#555;
+  --gold:#c8a96e;--gold-d:rgba(200,169,110,0.12);--gold-b:rgba(200,169,110,0.35);
+  --green:#4caf7d;--green-d:rgba(76,175,125,0.1);
+  --red:#e05252;--red-d:rgba(224,82,82,0.1);
+  --r:10px;--rs:6px;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+.page{max-width:700px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+h1{font-size:20px;font-weight:500;margin-bottom:.3rem}
+.sub{font-size:12px;color:var(--muted);margin-bottom:2rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;margin-bottom:1rem}
+.card-title{font-size:13px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:6px}
+input,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-size:13px;color:var(--text);font-family:var(--sans);outline:none;transition:border-color .15s;margin-bottom:1rem}
+input:focus,textarea:focus{border-color:var(--gold-b)}
+input[type=password]{font-family:monospace;letter-spacing:.1em}
+textarea{min-height:180px;resize:vertical;font-family:monospace;font-size:12px;line-height:1.6}
+.btn{padding:10px 20px;border-radius:var(--rs);font-size:13px;font-weight:500;font-family:var(--sans);cursor:pointer;transition:all .15s;border:none}
+.btn-p{background:var(--gold);color:#0f0f0f;width:100%}
+.btn-p:hover{filter:brightness(1.1)}
+.btn-p:disabled{opacity:.35;cursor:not-allowed}
+.btn-g{background:transparent;color:var(--muted);border:1px solid var(--border);font-size:12px;padding:7px 14px}
+.btn-g:hover{color:var(--text);border-color:var(--border-h)}
+.status{padding:10px 13px;border-radius:var(--rs);font-size:12px;margin-top:.75rem;display:none}
+.status.ok{background:var(--green-d);border:1px solid rgba(76,175,125,.3);color:var(--green)}
+.status.err{background:var(--red-d);border:1px solid rgba(224,82,82,.3);color:var(--red)}
+.status.loading{background:var(--gold-d);border:1px solid var(--gold-b);color:var(--gold)}
+#loginSection{display:block}
+#adminSection{display:none}
+.paper-list{display:flex;flex-direction:column;gap:6px;margin-top:.5rem}
+.paper-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);font-size:12px}
+.paper-item-name{color:var(--text)}
+.paper-item-type{font-size:10px;padding:2px 7px;border-radius:10px;margin-left:8px}
+.paper-item-type.paper{background:rgba(91,156,246,.1);color:#5b9cf6}
+.paper-item-type.mark{background:var(--green-d);color:var(--green)}
+.paper-item-del{background:none;border:none;color:var(--dim);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:4px}
+.paper-item-del:hover{color:var(--red);background:var(--red-d)}
+.sep{height:1px;background:var(--border);margin:1rem 0}
+.hint{font-size:11px;color:var(--dim);margin-top:4px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Login -->
+  <div id="loginSection">
+    <h1>🔐 Admin Panel</h1>
+    <p class="sub">IB Mock Exam Generator — Διαχείριση Papers</p>
+    <div class="card">
+      <div class="card-title">🔑 Σύνδεση</div>
+      <label>Admin Password</label>
+      <input type="password" id="adminPass" placeholder="Κωδικός..." onkeydown="if(event.key==='Enter')login()">
+      <button class="btn btn-p" onclick="login()">Είσοδος</button>
+      <div class="status err" id="loginErr">❌ Λάθος κωδικός</div>
+    </div>
+  </div>
+
+  <!-- Admin -->
+  <div id="adminSection">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem">
+      <div>
+        <h1>📚 Admin Panel</h1>
+        <p class="sub">Διαχείριση IB Past Papers</p>
+      </div>
+      <button class="btn btn-g" onclick="logout()">Έξοδος</button>
+    </div>
+
+    <!-- GitHub Token -->
+    <div class="card">
+      <div class="card-title">⚙ GitHub Ρυθμίσεις</div>
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="ghToken" placeholder="github_pat_...">
+      <p class="hint">Αποθηκεύεται τοπικά στον browser σου. Χρειάζεται για αυτόματη ανανέωση της σελίδας.</p>
+      <button class="btn-g btn" onclick="saveGhToken()" style="margin-top:.5rem">Αποθήκευση token</button>
+      <div class="status" id="tokenStatus"></div>
+    </div>
+
+    <!-- Current papers -->
+    <div class="card">
+      <div class="card-title">📄 Τρέχον Paper Bank</div>
+      <div id="paperList"><p style="font-size:12px;color:var(--muted)">Φόρτωση...</p></div>
+      <div class="sep"></div>
+      <label>Επεξεργασία Paper Bank (raw text)</label>
+      <textarea id="paperContent" placeholder="Φόρτωση..."></textarea>
+      <p class="hint">Μορφή: [ΚΕΦΑΛΑΙΟ] Περιγραφή ερώτησης. MARK: Απάντηση.</p>
+    </div>
+
+    <!-- Add paper -->
+    <div class="card">
+      <div class="card-title">➕ Προσθήκη Νέου Paper</div>
+      <label>Όνομα Paper</label>
+      <input type="text" id="newPaperName" placeholder="π.χ. May 2024 TZ1 Paper 1">
+      <label>Τύπος</label>
+      <div style="display:flex;gap:8px;margin-bottom:1rem">
+        <label style="display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;cursor:pointer">
+          <input type="radio" name="ptype" value="paper" checked style="width:auto;margin:0"> Question Paper
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;cursor:pointer">
+          <input type="radio" name="ptype" value="mark" style="width:auto;margin:0"> Mark Scheme
+        </label>
+      </div>
+      <label>Ερωτήσεις & Λύσεις</label>
+      <textarea id="newPaperContent" placeholder="[ΘΕΜΑ] Περιγραφή ερώτησης με αριθμούς και δομή. MARK: Λύση βήμα-βήμα.&#10;&#10;Παράδειγμα:&#10;[CALCULUS] f(x)=3x²-2x+1. Find f'(x) and the coordinates of the minimum point. MARK: f'(x)=6x-2, min at x=1/3, f(1/3)=2/3."></textarea>
+      <button class="btn btn-p" onclick="addPaper()" id="addBtn">✦ Προσθήκη & Ανανέωση Σελίδας</button>
+      <div class="status" id="addStatus"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────
+const ADMIN_PASSWORD = 'ibexam2024!';  // ← ΑΛΛΑΞΕ ΤΟ
+const GH_USER = 'pasiouras';
+const GH_REPO = 'ib-exam';
+const GH_FILE = 'papers.js';
+const GH_BRANCH = 'main';
+
+// ── Login ───────────────────────────────────────────────
+function login(){
+  const pass = document.getElementById('adminPass').value;
+  if(pass === ADMIN_PASSWORD){
+    document.getElementById('loginSection').style.display='none';
+    document.getElementById('adminSection').style.display='block';
+    loadCurrentPapers();
+    const savedToken = localStorage.getItem('gh_token');
+    if(savedToken) document.getElementById('ghToken').value = savedToken;
+  } else {
+    const err = document.getElementById('loginErr');
+    err.style.display='block';
+    setTimeout(()=>err.style.display='none', 3000);
+  }
+}
+
+function logout(){
+  document.getElementById('loginSection').style.display='block';
+  document.getElementById('adminSection').style.display='none';
+  document.getElementById('adminPass').value='';
+}
+
+function saveGhToken(){
+  const t = document.getElementById('ghToken').value.trim();
+  if(!t){ showStatus('tokenStatus','⚠ Βάλε το token','err'); return; }
+  localStorage.setItem('gh_token', t);
+  showStatus('tokenStatus','✓ Token αποθηκεύτηκε','ok');
+}
+
+// ── Load current papers from GitHub ─────────────────────
+async function loadCurrentPapers(){
+  try{
+    const resp = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${GH_FILE}?t=${Date.now()}`);
+    if(!resp.ok) throw new Error('Δεν βρέθηκε το αρχείο στο GitHub');
+    const text = await resp.text();
+    // Extract content between backticks
+    const match = text.match(/const PAPER_BANK\s*=\s*`([\s\S]*?)`;/);
+    if(match){
+      document.getElementById('paperContent').value = match[1].trim();
+      renderPaperList(match[1]);
+    }
+  }catch(e){
+    document.getElementById('paperList').innerHTML=`<p style="font-size:12px;color:var(--red)">⚠ ${e.message} — Βεβαιώσου ότι το repo υπάρχει.</p>`;
+  }
+}
+
+function renderPaperList(content){
+  const lines = content.split('\n').filter(l=>l.trim().startsWith('['));
+  const list = document.getElementById('paperList');
+  if(!lines.length){ list.innerHTML='<p style="font-size:12px;color:var(--muted)">Κανένα paper ακόμα.</p>'; return; }
+  list.innerHTML = lines.map((l,i)=>{
+    const topic = l.match(/\[([^\]]+)\]/)?.[1]||'';
+    return `<div class="paper-item">
+      <span class="paper-item-name">${topic}</span>
+      <button class="paper-item-del" onclick="deletePaper(${i})" title="Διαγραφή">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ── Add paper ────────────────────────────────────────────
+async function addPaper(){
+  const name = document.getElementById('newPaperName').value.trim();
+  const content = document.getElementById('newPaperContent').value.trim();
+  const type = document.querySelector('input[name=ptype]:checked').value;
+  const ghToken = document.getElementById('ghToken').value.trim() || localStorage.getItem('gh_token');
+
+  if(!name || !content){ showStatus('addStatus','⚠ Συμπλήρωσε όνομα και περιεχόμενο','err'); return; }
+  if(!ghToken){ showStatus('addStatus','⚠ Βάλε GitHub token στις ρυθμίσεις','err'); return; }
+
+  showStatus('addStatus','⏳ Ανανέωση GitHub...','loading');
+  document.getElementById('addBtn').disabled=true;
+
+  try{
+    // Get current file SHA and content
+    const fileResp = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
+      headers:{'Authorization':`token ${ghToken}`,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(!fileResp.ok) throw new Error('Δεν βρέθηκε το αρχείο. Βεβαιώσου ότι έχεις ανεβάσει το papers.js στο GitHub.');
+    const fileData = await fileResp.json();
+    const sha = fileData.sha;
+
+    // Get current content
+    const currentContent = atob(fileData.content.replace(/\n/g,''));
+    const match = currentContent.match(/const PAPER_BANK\s*=\s*`([\s\S]*?)`;/);
+    const currentBank = match ? match[1].trim() : '';
+
+    // Add new paper
+    const newEntry = `\n[${name.toUpperCase()} — ${type==='mark'?'MARK SCHEME':'PAPER'}] ${content}`;
+    const newBank = currentBank + newEntry;
+
+    // Build new file
+    const newFile = `// IB Past Paper Bank — επεξεργάσιμο από το admin panel\nconst PAPER_BANK = \`${newBank}\`;`;
+
+    // Push to GitHub
+    const pushResp = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
+      method:'PUT',
+      headers:{'Authorization':`token ${ghToken}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({
+        message:`Add paper: ${name}`,
+        content:btoa(unescape(encodeURIComponent(newFile))),
+        sha:sha,
+        branch:GH_BRANCH
+      })
+    });
+    if(!pushResp.ok){const e=await pushResp.json();throw new Error(e.message);}
+
+    showStatus('addStatus','✅ Προστέθηκε! Η σελίδα θα ανανεωθεί σε ~30 δευτερόλεπτα (Netlify deploy).','ok');
+    document.getElementById('newPaperName').value='';
+    document.getElementById('newPaperContent').value='';
+    setTimeout(loadCurrentPapers, 3000);
+
+  }catch(e){
+    showStatus('addStatus',`❌ Σφάλμα: ${e.message}`,'err');
+  }finally{
+    document.getElementById('addBtn').disabled=false;
+  }
+}
+
+// ── Delete paper ─────────────────────────────────────────
+async function deletePaper(idx){
+  if(!confirm('Να διαγραφεί αυτό το paper;')) return;
+  const ghToken = document.getElementById('ghToken').value.trim() || localStorage.getItem('gh_token');
+  if(!ghToken){ alert('Βάλε GitHub token!'); return; }
+
+  const currentContent = document.getElementById('paperContent').value;
+  const lines = currentContent.split('\n');
+  const paperLines = lines.filter(l=>l.trim().startsWith('['));
+  const lineToRemove = paperLines[idx];
+  const newContent = lines.filter(l=>l!==lineToRemove).join('\n');
+
+  try{
+    const fileResp = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
+      headers:{'Authorization':`token ${ghToken}`}
+    });
+    const fileData = await fileResp.json();
+    const newFile = `// IB Past Paper Bank — επεξεργάσιμο από το admin panel\nconst PAPER_BANK = \`${newContent}\`;`;
+    await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`,{
+      method:'PUT',
+      headers:{'Authorization':`token ${ghToken}`,'Content-Type':'application/json'},
+      body:JSON.stringify({message:'Delete paper',content:btoa(unescape(encodeURIComponent(newFile))),sha:fileData.sha,branch:GH_BRANCH})
+    });
+    loadCurrentPapers();
+  }catch(e){ alert('Σφάλμα: '+e.message); }
+}
+
+function showStatus(id, msg, type){
+  const el=document.getElementById(id);
+  el.textContent=msg;el.className=`status ${type}`;el.style.display='block';
+  if(type==='ok') setTimeout(()=>el.style.display='none',5000);
+}
+</script>
+</body>
+</html>
