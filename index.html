@@ -150,7 +150,7 @@ h1 em{font-style:italic;color:var(--gold)}
   </div>
 </div>
 
-<div class="page">
+<div class="page" style="display:none">
   <!-- Topbar -->
   <div class="topbar no-print">
     <div class="topbar-logo">IB Mock <em>Exams</em></div>
@@ -246,11 +246,15 @@ let activeTopics=new Set(['Algebra','Functions','Calculus','Trigonometry']);
 // ── Auth check ────────────────────────────────────────
 window.addEventListener('load',async()=>{
   const {data:{session}}=await sb.auth.getSession();
-  if(!session){window.location.href='auth.html';return;}
+  if(!session){
+    window.location.replace('auth.html');
+    return;
+  }
   currentUser=session.user;
   await loadSubscription();
   buildTopics();
   updateUI();
+  document.querySelector('.page').style.display='block';
 });
 
 async function loadSubscription(){
