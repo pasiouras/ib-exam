@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="el">
 <head>
@@ -124,17 +125,6 @@ h1 em{font-style:italic;color:var(--gold)}
   <h1>Mock Exam <em>Generator</em></h1>
   <p class="subtitle">Επέλεξε κεφάλαια και δυσκολία — το AI δημιουργεί νέο mock exam αμέσως.</p>
 
-  <!-- API Key -->
-  <div class="card no-print" id="keyCard">
-    <div class="card-title"><span>🔑</span> Anthropic API Key</div>
-    <p class="key-note">Βάλε το API key σου από το <code>console.anthropic.com</code></p>
-    <div class="key-row">
-      <input type="password" id="apiKey" placeholder="sk-ant-api03-..." autocomplete="off">
-      <button onclick="saveKey()">Αποθήκευση</button>
-    </div>
-    <p class="key-status" id="keyStatus"></p>
-  </div>
-
   <!-- Config -->
   <div class="card no-print">
     <div class="card-title"><span>⚙</span> Ρυθμίσεις</div>
@@ -194,12 +184,10 @@ const TOPICS = [
   'Μιγαδικοί','Διανύσματα','Διωνυμική Ανάπτυξη','Λογαρίθμοι & e^x','Κινηματική'
 ];
 
-let apiKey='', mode='variant', diff='sl';
+let mode='variant', diff='sl';
 let activeTopics=new Set(['Άλγεβρα','Συναρτήσεις','Απειροστικός Λ.','Τριγωνομετρία']);
 
 window.addEventListener('load',()=>{
-  const s=localStorage.getItem('ib_ak');
-  if(s){apiKey=s;document.getElementById('apiKey').value=s;setKeyStatus('✓ Key φορτώθηκε',true);}
   buildTopics();
 });
 
@@ -214,21 +202,13 @@ function buildTopics(){
   });
 }
 
-function saveKey(){
-  const v=document.getElementById('apiKey').value.trim();
-  if(!v.startsWith('sk-ant')){setKeyStatus('⚠ Ξεκινά με sk-ant-...',false);return;}
-  apiKey=v;localStorage.setItem('ib_ak',v);setKeyStatus('✓ Αποθηκεύτηκε',true);
-}
-function setKeyStatus(msg,ok){
-  const el=document.getElementById('keyStatus');
-  el.textContent=msg;el.style.color=ok?'var(--green)':'var(--red)';
-}
+
 function setMode(m){mode=m;document.getElementById('mV').classList.toggle('sel',m==='variant');document.getElementById('mA').classList.toggle('sel',m==='ai');}
 function togChip(el){el.classList.toggle('on');}
 function setDiff(btn,d){diff=d;document.querySelectorAll('.diff button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
 async function generate(){
-  if(!apiKey){alert('Βάλε πρώτα το API key!');return;}
+  
   const topics=[...document.querySelectorAll('#topicChips .chip.on')].map(c=>c.textContent);
   if(!topics.length){alert('Επέλεξε τουλάχιστον ένα κεφάλαιο!');return;}
   const count=parseInt(document.getElementById('qc').value);
@@ -271,7 +251,7 @@ Return ONLY valid JSON, no markdown:
     const resp=await fetch(PROXY,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({apiKey,model:MODEL,max_tokens:8000,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:MODEL,max_tokens:8000,messages:[{role:'user',content:prompt}]})
     });
     if(!resp.ok)throw new Error(`HTTP ${resp.status}`);
     const data=await resp.json();
