@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="el">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,17 +31,8 @@ h1 em{font-style:italic;color:var(--gold)}
 .subtitle{font-size:13px;color:var(--muted);max-width:460px;line-height:1.7;margin-bottom:2rem}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;margin-bottom:1rem}
 .card-title{font-size:13px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
-.card-title span{font-size:16px}
 .lbl{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:6px;display:block;margin-top:1rem}
 .lbl:first-child{margin-top:0}
-.key-row{display:flex;gap:8px;margin-top:8px}
-.key-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px;font-size:12px;color:var(--text);font-family:monospace;outline:none;transition:border-color .15s}
-.key-row input:focus{border-color:var(--gold-b)}
-.key-row button{padding:8px 14px;background:var(--gold-d);border:1px solid var(--gold-b);border-radius:var(--rs);color:var(--gold);font-size:12px;cursor:pointer;font-family:var(--sans);transition:all .15s;white-space:nowrap}
-.key-row button:hover{background:var(--gold);color:#0f0f0f}
-.key-status{font-size:11px;color:var(--dim);margin-top:6px}
-.key-note{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:8px}
-.key-note code{font-size:10px;background:var(--surface2);padding:1px 5px;border-radius:3px;color:var(--gold)}
 .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .mode-card{padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s}
 .mode-card:hover{border-color:var(--border-h)}
@@ -55,7 +46,6 @@ h1 em{font-style:italic;color:var(--gold)}
 .chip.on{border-color:var(--gold-b);background:var(--gold-d);color:var(--gold)}
 .diff{display:flex;gap:6px}
 .diff button{flex:1;padding:7px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--muted);font-family:var(--sans);transition:all .12s}
-.diff button:hover{border-color:var(--border-h)}
 .diff button.on.sl{border-color:var(--green);background:var(--green-d);color:var(--green)}
 .diff button.on.hl{border-color:var(--gold-b);background:var(--gold-d);color:var(--gold)}
 .diff button.on.hlp{border-color:rgba(224,82,82,.4);background:var(--red-d);color:var(--red)}
@@ -65,7 +55,6 @@ h1 em{font-style:italic;color:var(--gold)}
 .sl-val{font-size:14px;font-weight:500;color:var(--gold);min-width:24px;text-align:right}
 .gen-btn{width:100%;padding:13px;margin-top:1.2rem;background:var(--gold);color:#0f0f0f;border:none;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all .15s}
 .gen-btn:hover{filter:brightness(1.1)}
-.gen-btn:disabled{opacity:.35;cursor:not-allowed}
 .prog-wrap{padding:1.5rem;text-align:center}
 .prog-track{height:2px;background:var(--border);border-radius:2px;overflow:hidden;margin:.8rem 0}
 .prog-fill{height:100%;background:var(--gold);border-radius:2px;width:0;transition:width .4s ease}
@@ -112,22 +101,29 @@ h1 em{font-style:italic;color:var(--gold)}
 .btn-g{background:transparent;color:var(--muted);border:1px solid var(--border)}
 .btn-g:hover{color:var(--text);border-color:var(--border-h)}
 .err{padding:12px 14px;background:var(--red-d);border:1px solid rgba(224,82,82,.3);border-radius:var(--rs);font-size:12px;color:var(--red)}
-.info{padding:10px 13px;background:rgba(91,156,246,.08);border:1px solid rgba(91,156,246,.2);border-radius:var(--rs);font-size:12px;color:var(--blue);margin-bottom:1rem}
+.warn{padding:12px 14px;background:rgba(200,169,110,.1);border:1px solid var(--gold-b);border-radius:var(--rs);font-size:12px;color:var(--gold);margin-bottom:1rem}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .fade{animation:fadeUp .35s ease both}
 @media print{.no-print{display:none!important}.ms-box{display:block!important}}
-@media(max-width:500px){.mode-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:500px){.mode-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="page">
-  <div class="eyebrow">IB Mathematics AA</div>
+  <div class="eyebrow">IB Mathematics</div>
   <h1>Mock Exam <em>Generator</em></h1>
-  <p class="subtitle">Select topics and difficulty — AI generates a new mock exam instantly.</p>
+  <p class="subtitle">Select your course, topics and difficulty — AI generates a new mock exam instantly.</p>
 
-  <!-- Config -->
   <div class="card no-print">
     <div class="card-title"><span>⚙</span> Settings</div>
+
+    <span class="lbl">Course</span>
+    <div class="chips" id="courseChips">
+      <div class="chip on" onclick="togChip(this)">AA SL</div>
+      <div class="chip" onclick="togChip(this)">AA HL</div>
+      <div class="chip" onclick="togChip(this)">AI SL</div>
+      <div class="chip" onclick="togChip(this)">AI HL</div>
+    </div>
 
     <span class="lbl">Mode</span>
     <div class="mode-grid">
@@ -185,11 +181,9 @@ const TOPICS = [
 ];
 
 let mode='variant', diff='sl';
-let activeTopics=new Set(['Algebra','Functions','Calculus','Trigonometry']);
+let activeTopics = new Set(['Algebra','Functions','Calculus','Trigonometry']);
 
-window.addEventListener('load',()=>{
-  buildTopics();
-});
+window.addEventListener('load', buildTopics);
 
 function buildTopics(){
   const g=document.getElementById('topicChips');
@@ -202,57 +196,58 @@ function buildTopics(){
   });
 }
 
-
-function setMode(m){mode=m;document.getElementById('mV').classList.toggle('sel',m==='variant');document.getElementById('mA').classList.toggle('sel',m==='ai');}
 function togChip(el){el.classList.toggle('on');}
+function setMode(m){mode=m;document.getElementById('mV').classList.toggle('sel',m==='variant');document.getElementById('mA').classList.toggle('sel',m==='ai');}
 function setDiff(btn,d){diff=d;document.querySelectorAll('.diff button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
 async function generate(){
-  
+  const courses=[...document.querySelectorAll('#courseChips .chip.on')].map(c=>c.textContent);
+  if(!courses.length){alert('Select at least one course!');return;}
   const topics=[...document.querySelectorAll('#topicChips .chip.on')].map(c=>c.textContent);
   if(!topics.length){alert('Select at least one topic!');return;}
+
   const count=parseInt(document.getElementById('qc').value);
   const paperType=document.getElementById('cp1').classList.contains('on')?'Paper 1 (no calculator)':'Paper 2 (calculator)';
   const diffLabel={sl:'SL',hl:'HL',hlp:'HL+ challenging'}[diff];
-  const modeDesc=mode==='variant'?'Create variants: same structure, different numbers.':'Create original IB-style questions.';
-
-  // Get papers from papers.js (loaded as global PAPER_BANK)
-  const bankContent = typeof PAPER_BANK !== 'undefined' ? PAPER_BANK : 'No papers loaded.';
+  const modeDesc=mode==='variant'?'Create variants of real IB questions: same structure, change all numbers.':'Create original new IB-style questions.';
+  const bankContent=typeof PAPER_BANK!=='undefined'&&PAPER_BANK.trim()?PAPER_BANK:'No past papers loaded yet.';
 
   const out=document.getElementById('out');
   out.innerHTML=`<div class="card prog-wrap fade">
     <div style="font-size:1.5rem;animation:spin 1s linear infinite;display:inline-block">⟳</div>
     <div class="prog-track"><div class="prog-fill" id="pf"></div></div>
-    <p class="prog-msg" id="pm">Generating ${count} questions…</p>
+    <p class="prog-msg">Generating ${count} questions…</p>
   </div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
 
   let p=0;
   const iv=setInterval(()=>{p=Math.min(p+1.2,88);const el=document.getElementById('pf');if(el)el.style.width=p+'%';},120);
 
-  const prompt=`You are an IB Mathematics AA examiner. Generate EXACTLY ${count} exam questions.
+  const prompt=`You are an IB Mathematics examiner. Generate EXACTLY ${count} exam questions.
 
 PAST PAPER BANK:
 ${bankContent}
 
-SETTINGS: ${diffLabel} · ${paperType} · Topics: ${topics.join(', ')}
-MODE: ${modeDesc}
+SETTINGS:
+- Course: ${courses.join(' / ')}
+- Level: ${diffLabel}
+- Paper type: ${paperType}
+- Topics: ${topics.join(', ')}
+- Mode: ${modeDesc}
 
 RULES:
-- IB command terms: Find, Show that, Hence, Write down, Determine, Sketch
-- Parts (a)(b)(c) with marks in [brackets]
-- LaTeX between $ signs for ALL math
-- Mark schemes: M1 A1 R1 AG — SHORT (1-2 lines per part)
-- Clean exact answers (surds, fractions, integers)
+- Use authentic IB command terms: Find, Show that, Hence, Write down, Determine, Sketch, Calculate
+- Structure with parts (a)(b)(c) each with their own marks
+- Use LaTeX between $ signs for ALL math expressions
+- Mark schemes: M1 (method) A1 (answer) R1 (reasoning) AG (answer given) — keep SHORT
+- Choose numbers that give clean exact answers (surds, simple fractions, integers)
+- Match the style and difficulty of the selected course
 
-Return ONLY valid JSON, no markdown:
-{"title":"IB Mathematics AA — Mock Exam","subtitle":"${diffLabel} · ${paperType}","questions":[{"num":1,"topic":"","context":"","parts":[{"label":"(a)","text":"","marks":2}],"total_marks":5,"markscheme":""}]}`;
+Return ONLY valid JSON, absolutely no markdown or extra text:
+{"title":"IB Mathematics Mock Exam","subtitle":"${courses.join(' / ')} · ${diffLabel} · ${paperType}","questions":[{"num":1,"topic":"","context":"","parts":[{"label":"(a)","text":"","marks":2}],"total_marks":5,"markscheme":""}]}`;
 
   try{
-    const resp=await fetch(PROXY,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:MODEL,max_tokens:8000,messages:[{role:'user',content:prompt}]})
-    });
+    const resp=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:8000,messages:[{role:'user',content:prompt}]})});
     if(!resp.ok)throw new Error(`HTTP ${resp.status}`);
     const data=await resp.json();
     const raw=(data.content||[]).map(c=>c.text||'').join('');
@@ -273,7 +268,7 @@ function renderExam(data){
   const time=Math.round(total*1.5);
   let html=`
   <div class="exam-hd fade">
-    <div><div class="exam-hd-title">${data.title||'IB Math AA Mock Exam'}</div>
+    <div><div class="exam-hd-title">${data.title||'IB Math Mock Exam'}</div>
     <div class="exam-hd-sub">${data.subtitle||''}</div></div>
     <span class="exam-badge">${total} marks</span>
   </div>
@@ -282,6 +277,7 @@ function renderExam(data){
     <div class="stat"><div class="n">${total}</div><div class="l">Marks</div></div>
     <div class="stat"><div class="n">${time}'</div><div class="l">Time (~)</div></div>
   </div>`;
+
   qs.forEach((q,i)=>{
     const parts=(q.parts||[]).map(p=>`<div class="part"><span class="part-lbl">${p.label}</span><span class="part-txt">${p.text}</span><span class="part-m">[${p.marks}]</span></div>`).join('');
     const ms=(q.markscheme||'').replace(/\\n/g,'<br>').replace(/\bM1\b/g,'<span class="mk M">M1</span>').replace(/\bM2\b/g,'<span class="mk M">M2</span>').replace(/\bA1\b/g,'<span class="mk A">A1</span>').replace(/\bA2\b/g,'<span class="mk A">A2</span>').replace(/\bR1\b/g,'<span class="mk R">R1</span>').replace(/\bAG\b/g,'<span class="mk AG">AG</span>');
@@ -299,12 +295,14 @@ function renderExam(data){
       <div class="ms-box"><p>${ms}</p></div>
     </div>`;
   });
+
   html+=`<div class="actions no-print fade">
     <button class="btn btn-p" onclick="generate()">↺ New exam</button>
     <button class="btn btn-s" onclick="revealAll()">👁 Show all solutions</button>
     <button class="btn btn-g" onclick="printQuestions()">🖨 Print Questions</button>
     <button class="btn btn-g" onclick="printMarkScheme()">🖨 Print Mark Scheme</button>
   </div>`;
+
   document.getElementById('out').innerHTML=html;
   renderKatex();
 }
@@ -315,51 +313,28 @@ function togMS(btn){
   box.classList.toggle('open',open);btn.classList.toggle('open',open);
   btn.childNodes[1].textContent=' '+(open?'Hide mark scheme':'Show mark scheme');
 }
+
 function revealAll(){
   document.querySelectorAll('.ms-box').forEach(b=>b.classList.add('open'));
   document.querySelectorAll('.ms-btn').forEach(b=>{b.classList.add('open');b.childNodes[1].textContent=' Hide mark scheme';});
 }
 
 function printQuestions(){
-  // Hide all mark schemes, print, then restore
-  const boxes = document.querySelectorAll('.ms-box');
-  const btns = document.querySelectorAll('.ms-btn');
-  const prev = [...boxes].map(b=>b.classList.contains('open'));
-  boxes.forEach(b=>b.classList.remove('open'));
-  btns.forEach(b=>b.style.display='none');
-
-  const style = document.createElement('style');
-  style.id = 'print-override';
-  style.textContent = '.ms-box{display:none!important}.ms-btn{display:none!important}.no-print{display:none!important}';
+  const style=document.createElement('style');
+  style.id='po';
+  style.textContent='.ms-box{display:none!important}.ms-btn{display:none!important}.no-print{display:none!important}';
   document.head.appendChild(style);
-
   window.print();
-
-  // Restore after print dialog closes
-  setTimeout(()=>{
-    document.getElementById('print-override')?.remove();
-    btns.forEach(b=>b.style.display='');
-    boxes.forEach((b,i)=>{ if(prev[i]) b.classList.add('open'); });
-  }, 500);
+  setTimeout(()=>document.getElementById('po')?.remove(),500);
 }
 
 function printMarkScheme(){
-  // Show all mark schemes, hide question parts, print
-  const style = document.createElement('style');
-  style.id = 'print-override';
-  style.textContent = `
-    .no-print{display:none!important}
-    .ms-box{display:block!important}
-    .ms-btn{display:none!important}
-    .parts{display:none!important}
-    .q-ctx{display:none!important}
-    .exam-hd-sub::after{content:" — MARK SCHEME"}
-  `;
+  const style=document.createElement('style');
+  style.id='po';
+  style.textContent='.no-print{display:none!important}.ms-box{display:block!important}.ms-btn{display:none!important}.parts{display:none!important}.q-ctx{display:none!important}.exam-hd-sub::after{content:" — MARK SCHEME"}';
   document.head.appendChild(style);
-
   window.print();
-
-  setTimeout(()=>{ document.getElementById('print-override')?.remove(); }, 500);
+  setTimeout(()=>document.getElementById('po')?.remove(),500);
 }
 
 function renderKatex(){
