@@ -302,7 +302,8 @@ function renderExam(data){
   html+=`<div class="actions no-print fade">
     <button class="btn btn-p" onclick="generate()">↺ New exam</button>
     <button class="btn btn-s" onclick="revealAll()">👁 Show all solutions</button>
-    <button class="btn btn-g" onclick="window.print()">🖨 Print</button>
+    <button class="btn btn-g" onclick="printQuestions()">🖨 Print Questions</button>
+    <button class="btn btn-g" onclick="printMarkScheme()">🖨 Print Mark Scheme</button>
   </div>`;
   document.getElementById('out').innerHTML=html;
   renderKatex();
@@ -318,6 +319,49 @@ function revealAll(){
   document.querySelectorAll('.ms-box').forEach(b=>b.classList.add('open'));
   document.querySelectorAll('.ms-btn').forEach(b=>{b.classList.add('open');b.childNodes[1].textContent=' Hide mark scheme';});
 }
+
+function printQuestions(){
+  // Hide all mark schemes, print, then restore
+  const boxes = document.querySelectorAll('.ms-box');
+  const btns = document.querySelectorAll('.ms-btn');
+  const prev = [...boxes].map(b=>b.classList.contains('open'));
+  boxes.forEach(b=>b.classList.remove('open'));
+  btns.forEach(b=>b.style.display='none');
+
+  const style = document.createElement('style');
+  style.id = 'print-override';
+  style.textContent = '.ms-box{display:none!important}.ms-btn{display:none!important}.no-print{display:none!important}';
+  document.head.appendChild(style);
+
+  window.print();
+
+  // Restore after print dialog closes
+  setTimeout(()=>{
+    document.getElementById('print-override')?.remove();
+    btns.forEach(b=>b.style.display='');
+    boxes.forEach((b,i)=>{ if(prev[i]) b.classList.add('open'); });
+  }, 500);
+}
+
+function printMarkScheme(){
+  // Show all mark schemes, hide question parts, print
+  const style = document.createElement('style');
+  style.id = 'print-override';
+  style.textContent = `
+    .no-print{display:none!important}
+    .ms-box{display:block!important}
+    .ms-btn{display:none!important}
+    .parts{display:none!important}
+    .q-ctx{display:none!important}
+    .exam-hd-sub::after{content:" — MARK SCHEME"}
+  `;
+  document.head.appendChild(style);
+
+  window.print();
+
+  setTimeout(()=>{ document.getElementById('print-override')?.remove(); }, 500);
+}
+
 function renderKatex(){
   if(typeof renderMathInElement==='function'){
     renderMathInElement(document.getElementById('out'),{
